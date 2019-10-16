@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS_UrRobot", "CS_UR_socketControl\CS_UrRobot.csproj", "{E990C276-C9E3-471A-9C57-7DCE2C6F0718}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS_UrRobot", "CS_UrRobot\CS_UrRobot.csproj", "{E990C276-C9E3-471A-9C57-7DCE2C6F0718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
