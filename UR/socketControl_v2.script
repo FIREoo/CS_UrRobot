@@ -1,0 +1,43 @@
+if dynamic == True:
+	if cmdMsg == "pservoj":
+		pos = p[msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
+		jpos = get_inverse_kin(pos)
+		servoj(jpos)
+	elif cmdMsg == "jservoj":
+		jpos = [msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
+		servoj(jpos)
+end
+
+if dynamic == False:
+	if cmdMsg == "jmovej":
+		jpos = [msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
+		movej(jpos)	
+		socket_send_string("UR:done")
+	elif cmdMsg == "pmovep":
+		pos = p[msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
+		movep(pos) 
+		socket_send_string("UR:done")
+	elif cmdMsg == "Rmovej":
+		nowPosj = get_target_joint_positions()
+		jpos = [nowPosj[0]+msgFloat[1],nowPosj[1]+msgFloat[2],nowPosj[2]+msgFloat[3],nowPosj[3]+msgFloat[4],nowPosj[4]+msgFloat[5],nowPosj[5]+msgFloat[6]]	
+		movej(jpos)
+		socket_send_string("UR:done")
+	elif cmdMsg == "Rmovep":
+		nowPos = get_actual_tcp_pose() 
+		pos = p[nowPosj[0]+msgFloat[1],nowPosj[1]+msgFloat[2],nowPosj[2]+msgFloat[3],nowPosj[3]+msgFloat[4],nowPosj[4]+msgFloat[5],nowPosj[5]+msgFloat[6]]
+		movep(pos)
+		socket_send_string("UR:done")
+	elif cmdMsg == "gripper":
+		rq_move(msgFloat[1])
+		rq_set_force(msgFloat[2])
+		rq_set_speed(msgFloat[3]) 
+		socket_send_string("UR:done")
+	elif cmdMsg == "recordj":
+		freedrive_mode()
+	elif cmdMsg == "stop":
+		end_freedrive_mode()
+		stopj(2)	
+	end
+
+	dynamic = True
+end

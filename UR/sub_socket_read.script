@@ -1,0 +1,37 @@
+#//thread will stuck and wait cmd
+while True:
+
+    cmdMsg = socket_read_string() #//stuck
+
+    if cmdMsg == "recordj":
+        socket_send_string(get_actual_joint_positions())
+    elif cmdMsg == "stop"
+        socket_send_string(get_actual_tcp_pose())
+    else:
+        socket_send_string("UR:"+ cmdMsg)  
+        msgFloat = socket_read_ascii_float(6)  
+        while msgFloat[0] != 6:
+            msgFloat = socket_read_ascii_float(6)
+        end
+    end
+
+    if cmdMsg == "pservoj":
+        dynamic = True	
+    elif cmdMsg == "jservoj":
+        dynamic = True
+	elif cmdMsg == "jmovej":
+		dynamic = False	
+	elif cmdMsg == "pmovep":
+		dynamic = False
+    elif cmdMsg == "Rmovej":
+		dynamic = False
+	elif cmdMsg == "Rmovep":
+		dynamic = False
+	elif cmdMsg == "gripper":
+        dynamic = False
+    else:
+        dynamic = False
+	end
+
+    
+end
