@@ -24,7 +24,7 @@ namespace UrRobot.Socket
         jog = 10,
         moveByFile = 99
     }
-    class UrSocketControl
+    public class UrSocketControl
     {
         public mode cmd = mode.stop;
 
@@ -68,214 +68,39 @@ namespace UrRobot.Socket
                 cmd = mode.stop;
                 while (serverOn)
                 {
-                    if (cmd == mode.moveByFile)
+                    if (cmd == mode.moveByFile) { }
+
+                    else if(cmd == mode.pmovep)
                     {
-                        string[] fileList = System.IO.File.ReadAllLines(ReadingFile);
-                        for (int p = 0; p < fileList.Count();)
-                        {
-                            if (p >= fileList.Count())//代表最後一行了
-                                break;
-                            if (fileList[p] == "")
-                            { p++; continue; }
+                        if (!_sendMsg("pmovep", ref cmd)) break;
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
 
-                            switch (fileList[p])
-                            {
-                                case "position":
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        _sendMsg("pmovep", ref cmd);//record pos模式
+                        if (!_sendMsg($"p[]", ref cmd)) break;
 
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得 movep
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
+                        if (sMsg != "UR:done")
+                            Console.WriteLine("error!! UR robot didn't finish work?");
+                    }
+                    else if (cmd == mode.jmovej)//done
+                    {
+                        if (!_sendMsg("jmovej", ref cmd)) break;
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
 
-                                        byte[] _pcount = new byte[1] { 1 };
-                                        stream.Write(_pcount, 0, 1);//@test   1個點
+                        if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
 
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"set" 也就是要開始給座標點
-
-                                        _sendMsg("(" + fileList[p].Substring(2, fileList[p].Length - 3) + ")", ref cmd);//point
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    }
-                                    break;
-                                case "joint":
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        _sendMsg("jmovej", ref cmd);//jmovej模式
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得 movej
-
-                                        byte[] _pcount = new byte[1] { 1 };
-                                        stream.Write(_pcount, 0, 1);//@test   1個點
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"set" 也就是要開始給座標點
-
-                                        _sendMsg("(" + fileList[p].Substring(1, fileList[p].Length - 2) + ")", ref cmd);//joint
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    }
-                                    break;
-                                case "Rmovej":
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        _sendMsg("Rmovej", ref cmd);//Rmovej模式 //相對移動 joint
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得 Rmovej
-
-                                        byte[] _pcount = new byte[1] { 1 };
-                                        stream.Write(_pcount, 0, 1);//@test   1個點
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"set" 也就是要開始給座標點
-
-                                        _sendMsg("(" + fileList[p].Substring(1, fileList[p].Length - 2) + ")", ref cmd);
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    }
-                                    break;
-                                case "Rmovep":
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        _sendMsg("Rmovep", ref cmd);//Rmovep模式
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得 Rmovej
-
-                                        byte[] _pcount = new byte[1] { 1 };
-                                        stream.Write(_pcount, 0, 1);//@test   1個點
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"set" 也就是要開始給座標點
-
-                                        _sendMsg("(" + fileList[p].Substring(2, fileList[p].Length - 3) + ")", ref cmd);//point
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    }
-                                    break;
-                                case "pmovej":
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        _sendMsg("pmovej", ref cmd);//record pos模式
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得 movep
-
-                                        byte[] _pcount = new byte[1] { 1 };
-                                        stream.Write(_pcount, 0, 1);//@test   1個點
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"set" 也就是要開始給座標點
-
-                                        _sendMsg("(" + fileList[p].Substring(2, fileList[p].Length - 3) + ")", ref cmd);//point
-
-                                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                        Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    }
-                                    break;
-                                case "gripper"://gripper 只能一行 gripper 一行 數字
-                                    p++;
-                                    _sendMsg("gripper", ref cmd);//gripper模式
-
-                                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                    Console.WriteLine("Robot : " + sMsg);//應該會是獲得 gripper
-
-                                    byte[] pcount = new byte[3] { (byte)fileList[p].toInt(), 0, 150 };
-                                    stream.Write(pcount, 0, 3);//pos force speed
-                                                               //_sendMsg("(" + rq_pos + "," + 0 + "," + 150 + ")");
-
-                                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                    Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-
-                                    p++;
-                                    break;
-                                case "sleep":
-                                    p++;
-                                    Thread.Sleep(fileList[p].toInt());
-                                    p++;
-                                    break;
-
-                                case "test":
-                                    p++;
-                                    if (p >= fileList.Count())//代表最後一行了
-                                        break;
-                                    if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                        break;
-                                    _sendMsg("test", ref cmd);
-
-                                    List<string> servoCmd = new List<string>();
-                                    servoCmd.Add(fileList[p]);
-                                    while (true)
-                                    {
-                                        p++;
-                                        if (p >= fileList.Count())//代表最後一行了
-                                            break;
-                                        if (fileList[p].IndexOf('[') == -1)//代表是指令
-                                            break;
-                                        servoCmd.Add(fileList[p]);
-                                    }
-
-                                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                    Console.WriteLine("Robot : " + sMsg);//應該會是獲得 test
-
-                                    for (int i = 0; i < servoCmd.Count; i++)
-                                    {
-                                        string str = $"( {servoCmd[i].Substring(1, servoCmd[i].Length - 2)})";
-                                        _sendMsg(str, ref cmd);
-                                    }
-                                    _sendMsg("(0,0,-100,0,0,0)", ref cmd);
-
-                                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                                    Console.WriteLine("Robot : " + sMsg);//應該會是獲得"work done" 
-                                    break;
-                            }
-                            if (sMsg == "End") break;
-                        }
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
+                        if (sMsg != "UR:done")
+                            Console.WriteLine("error!! UR robot didn't finish work?");
                         cmd = mode.stop;
                     }
-
-                    else if (cmd == mode.stop)
+                    else if (cmd == mode.stop)//done
                     {
-                        while (cmd == mode.stop)
-                        {
-                            if (!_sendMsg("stop", ref cmd)) break;
-                            sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                            Console.WriteLine(sMsg); //拿到
-                            if (sMsg != "UR:stop")
-                                Console.WriteLine("error!! UR robot didn't stop?");
-                        }
+                        if (!_sendMsg("stop", ref cmd)) break;
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg); //拿到 postion
                     }
                     else if (cmd == mode.recordj)
                     {
@@ -289,16 +114,13 @@ namespace UrRobot.Socket
                     else if (cmd == mode.jog)//未完成
                     {
                     }
-                    else if (cmd == mode.gripper)
+                    else if (cmd == mode.gripper)//done
                     {
                         if (!_sendMsg("gripper", ref cmd)) break;
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg);
 
-                        int rq_pos = 0;
-                        int rq_force = 0;
-                        int rq_speed = 10;
-                        if (!_sendMsg($"[{rq_pos},{rq_force},{rq_speed},0,0,0]", ref cmd)) break;
+                        if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]", ref cmd)) break;
 
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg);
@@ -369,12 +191,54 @@ namespace UrRobot.Socket
         public void stopServer()
         {
             serverOn = false;
-            thread_server.Abort();
+            if (thread_server != null)
+                thread_server.Abort();
             //OnLinkState(new LinkArgs("disconnect"));
         }
 
 
         #endregion //---Server---//
+
+        float[] val_grip = new float[3];
+        public void goGripper(int pos, int force = 0, int speed = 0, bool wait = true)
+        {
+            if (pos > 255) pos = 255;
+            else if (pos < 0) pos = 0;
+
+            if (force > 255) force = 255;
+            else if (force < 0) force = 0;
+
+            if (speed > 255) speed = 255;
+            else if (speed < 0) speed = 0;
+
+            val_grip[0] = pos / 1000.0f;
+            val_grip[1] = force / 1000.0f;
+            val_grip[2] = speed / 1000.0f;
+            cmd = mode.gripper;
+
+            if (wait)
+                while (cmd != mode.stop) ;
+        }
+        public void goPosition(URCoordinates pos)
+        {
+
+        }
+        public void goPosition()
+        {
+            cmd = mode.jmovej;
+        }
+        float[] val_joint = new float[6];
+        public void goJoint(float j1, float j2, float j3, float j4, float j5, float j6)
+        {
+            val_joint[0] = j1;
+            val_joint[1] = j2;
+            val_joint[2] = j3;
+            val_joint[3] = j4;
+            val_joint[4] = j5;
+            val_joint[5] = j6;
+            val_joint[0] = j1;
+            cmd = mode.jmovej;
+        }
         void tmp()
         {
             URCoordinates urc = new URCoordinates(3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M());
