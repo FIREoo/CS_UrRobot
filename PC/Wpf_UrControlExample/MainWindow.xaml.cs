@@ -43,12 +43,23 @@ namespace Wpf_UrControlExample
 
         private void Btn_goPos_Click(object sender, RoutedEventArgs e)
         {
-           
+            UR.goPosition(new URCoordinates(0.45f, 0.0f, 0.14f, 3.14f, 0, 0));
         }
 
         private void Btn_goJoint_Click(object sender, RoutedEventArgs e)
         {
-            UR.goJoint(3.14f,-1.57f,0,-1.57f,0,0);
+           UR.goJoint(3.14f,-1.57f,0,-1.57f,0,0);
+            
+        }
+
+        private void Btn_recordj_Click(object sender, RoutedEventArgs e)
+        {
+            UR.startRecord();
+        }
+
+        private void Btn_robotStop_Click(object sender, RoutedEventArgs e)
+        {
+            UR.Stop();
         }
     }
 }

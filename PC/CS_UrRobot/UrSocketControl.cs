@@ -70,17 +70,18 @@ namespace UrRobot.Socket
                 {
                     if (cmd == mode.moveByFile) { }
 
-                    else if(cmd == mode.pmovep)
+                    else if(cmd == mode.pmovep)//done
                     {
                         if (!_sendMsg("pmovep", ref cmd)) break;
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
 
-                        if (!_sendMsg($"p[]", ref cmd)) break;
+                        if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
 
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg);
                         if (sMsg != "UR:done")
                             Console.WriteLine("error!! UR robot didn't finish work?");
+                        cmd = mode.stop;
                     }
                     else if (cmd == mode.jmovej)//done
                     {
@@ -102,11 +103,12 @@ namespace UrRobot.Socket
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg); //拿到 postion
                     }
-                    else if (cmd == mode.recordj)
+
+                    else if (cmd == mode.recordj)//done
                     {
                         if (!_sendMsg("recordj", ref cmd)) break;
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine("UR : " + sMsg);//應該會是獲得 robot joint
+                        Console.WriteLine(sMsg);//拿到joint
                     }
                     else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
                     {
@@ -132,7 +134,7 @@ namespace UrRobot.Socket
                     else if (cmd == mode.grip)//遺棄
                     {
                     }
-                    else if (cmd == mode.End)
+                    else if (cmd == mode.End)//done
                     {
                         break;
                     }
@@ -195,9 +197,12 @@ namespace UrRobot.Socket
                 thread_server.Abort();
             //OnLinkState(new LinkArgs("disconnect"));
         }
-
-
         #endregion //---Server---//
+
+        public void Stop()
+        {
+            cmd = mode.stop;
+        }
 
         float[] val_grip = new float[3];
         public void goGripper(int pos, int force = 0, int speed = 0, bool wait = true)
@@ -219,14 +224,19 @@ namespace UrRobot.Socket
             if (wait)
                 while (cmd != mode.stop) ;
         }
+
+        float[] val_pos = new float[6];
         public void goPosition(URCoordinates pos)
         {
+            val_pos[0] = pos.X.M;
+            val_pos[1] = pos.Y.M;
+            val_pos[2] = pos.Z.M;
+            val_pos[3] = pos.Rx.rad;
+            val_pos[4] = pos.Ry.rad;
+            val_pos[5] = pos.Rz.rad;
+            cmd = mode.pmovep;
+        }
 
-        }
-        public void goPosition()
-        {
-            cmd = mode.jmovej;
-        }
         float[] val_joint = new float[6];
         public void goJoint(float j1, float j2, float j3, float j4, float j5, float j6)
         {
@@ -239,9 +249,17 @@ namespace UrRobot.Socket
             val_joint[0] = j1;
             cmd = mode.jmovej;
         }
+
+        #region //---Record---//
+        public void startRecord()
+        {
+            cmd = mode.recordj;
+        }
+        #endregion //---Record---//
+
         void tmp()
         {
-            URCoordinates urc = new URCoordinates(3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M());
+          //  URCoordinates urc = new URCoordinates(3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M());
 
         }
     }

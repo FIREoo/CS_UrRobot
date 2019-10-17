@@ -8,8 +8,8 @@ while True:
         socket_send_string(get_actual_tcp_pose())
     elif msg == "recordj":
         cmdMsg = "recordj"
+        dynamic = True
         socket_send_string(get_actual_joint_positions())
-        dynamic = False
     elif msg == "pservoj":
         cmdMsg = "pservoj"
         dynamic = True

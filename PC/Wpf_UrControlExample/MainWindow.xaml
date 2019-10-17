@@ -14,6 +14,8 @@
         <TextBox x:Name="tb_grip_s" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="48" Margin="213,97,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
         <Button x:Name="btn_goPos" Content="go position" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="100" Height="47" Click="Btn_goPos_Click"/>
         <Button x:Name="btn_goJoint" Content="go joint" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Width="100" Height="41" Click="Btn_goJoint_Click"/>
+        <Button x:Name="btn_recordj" Content="recordj" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="75" Height="40" Click="Btn_recordj_Click"/>
+        <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="212" Click="Btn_robotStop_Click"/>
 
     </Grid>
 </Window>
