@@ -34,6 +34,39 @@ namespace UrRobot.Socket
             get { return serverOn; }
         }
 
+        NetworkStream myNetworkStream;
+        TcpClient myTcpClient;
+        private bool clientConect = false;
+        #region //---Client---//
+        public void creatClient(string IP)
+        {
+            string hostName = IP;
+            int connectPort = 30002;
+            myTcpClient = new TcpClient();
+            try
+            {
+                myTcpClient.Connect(hostName, connectPort);
+                Console.WriteLine("UR連線成功 !!\n");
+                clientConect = true;
+            }
+            catch
+            {
+                Console.WriteLine
+                           ("主機 {0} 通訊埠 {1} 無法連接  !!", hostName, connectPort);
+                return;
+            }
+        }
+
+        public void client_SendData(string msg)
+        {
+            if (!clientConect) { Console.WriteLine("尚未連線"); return; }
+
+            Byte[] myBytes = Encoding.ASCII.GetBytes(msg);
+            myNetworkStream = myTcpClient.GetStream();
+            myNetworkStream.Write(myBytes, 0, myBytes.Length);
+        }
+        #endregion ---Client---
+
         #region  //---Server---//
         Thread thread_server;
         public void startServer(string ip, int port)
