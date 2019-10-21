@@ -284,16 +284,45 @@ namespace UrRobot.Socket
         }
 
         #region //---Record---//
-        public void startRecord()
+        string rootPath = "Path\\";
+        bool isRecord = false;
+        StreamWriter txt_record;
+        public void startRecord(string fileName = "record.path")
         {
+            if(isRecord == true)
+            {
+                Console.WriteLine("Already in record mode");
+                return;
+            }
+            isRecord = true;
+            txt_record = new StreamWriter(rootPath+fileName,false);//false覆寫
             cmd = mode.recordj;
+        }
+         public void writeRecord()
+        {
+            if (isRecord == false)
+            {
+                Console.WriteLine("Record mode unable");
+                return;
+            }
+
+        }
+
+        public void endRecord()
+        {
+            if (isRecord == true)
+            {
+                cmd = mode.stop;
+                txt_record.Flush();
+                txt_record.Close();
+            }
+            else
+            {
+                Console.WriteLine("Record mode already off");
+                return;
+            }
         }
         #endregion //---Record---//
 
-        void tmp()
-        {
-          //  URCoordinates urc = new URCoordinates(3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M(), 3.2.M());
-
-        }
     }
 }

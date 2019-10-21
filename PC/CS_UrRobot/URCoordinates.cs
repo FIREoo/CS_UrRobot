@@ -6,11 +6,35 @@ using System.Threading.Tasks;
 
 namespace UrRobot.Coordinates
 {
-    static class ex
+    static public class ex
     {
-        static public Unit M(this float value)
+        static public Unit M(this double value)
         {
-            return new Unit(value);
+            return new Unit((float)value);
+        }
+        static public Unit M(this int value)
+        {
+            return new Unit((float)value);
+        }
+        static public Unit mm(this int value)
+        {
+            return new Unit((float)value/1000f);
+        }
+        static public Unit mm(this double value)
+        {
+            return new Unit((float)value / 1000f);
+        }
+        static public Angle rad(this double value)
+        {
+            return new Angle((float)value);
+        }
+        static public Angle rad(this int value)
+        {
+            return new Angle((float)value);
+        }
+        static public int toInt(this string str)
+        {
+            return int.Parse(str);
         }
     }
     public class Unit
@@ -92,15 +116,18 @@ namespace UrRobot.Coordinates
         /// <param name="_Ry">axis Ry (unit meter)</param>
         /// <param name="_Rz">axis Rz (unit meter)</param>
         /// <param name="_G">gripper pos (0~255)</param>
-        public URCoordinates(float _x, float _y, float _z, float _Rx, float _Ry, float _Rz, byte _G = 0)
+        public URCoordinates(float _x, float _y, float _z, float _Rx, float _Ry, float _Rz, byte _G = 0, string unit = "M")
         {
-            X = new Unit(_x);
-            Y = new Unit(_y);
-            Z = new Unit(_z);
-            Rx = new Angle(_Rx);
-            Ry = new Angle(_Ry);
-            Rz = new Angle(_Rz);
-            Grip = _G;
+            if (unit == "M")
+            {
+                X = new Unit(_x);
+                Y = new Unit(_y);
+                Z = new Unit(_z);
+                Rx = new Angle(_Rx);
+                Ry = new Angle(_Ry);
+                Rz = new Angle(_Rz);
+                Grip = _G;
+            }
         }
         public URCoordinates(URCoordinates input)
         {
