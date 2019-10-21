@@ -11,21 +11,32 @@ while True:
         dynamic = True
         socket_send_string(get_actual_joint_positions())
     elif msg == "pservoj":
+        dynamic = True
+        socket_send_string("UR:"+ cmdMsg)  
+        msgFloat = socket_read_ascii_float(6)  
+        while msgFloat[0] != 6:
+            msgFloat = socket_read_ascii_float(6)
+        end
+        socket_send_string(get_actual_tcp_pose())
         cmdMsg = "pservoj"
+    elif msg == "pservoc":
+        cmdMsg = "pservoc"
         dynamic = True
         socket_send_string("UR:"+ cmdMsg)  
         msgFloat = socket_read_ascii_float(6)  
         while msgFloat[0] != 6:
             msgFloat = socket_read_ascii_float(6)
         end
+        socket_send_string(get_actual_tcp_pose())
     elif msg == "jservoj":
-        cmdMsg = "jservoj"
         dynamic = True
         socket_send_string("UR:"+ cmdMsg)  
         msgFloat = socket_read_ascii_float(6)  
         while msgFloat[0] != 6:
             msgFloat = socket_read_ascii_float(6)
         end
+        socket_send_string(get_actual_joint_positions())
+        cmdMsg = "jservoj"
 	elif msg == "jmovej":
         cmdMsg = "jmovej"
         socket_send_string("UR:"+ cmdMsg)  

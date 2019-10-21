@@ -36,6 +36,10 @@ namespace UrRobot.Coordinates
         {
             return int.Parse(str);
         }
+        static public float toFloat(this string str)
+        {
+            return float.Parse(str);
+        }
     }
     public class Unit
     {
@@ -43,6 +47,10 @@ namespace UrRobot.Coordinates
         public Unit(float v)
         {
             _M = v;
+        }
+        public Unit(double v)
+        {
+            _M = (float)v;
         }
         public Unit()
         {
@@ -66,6 +74,10 @@ namespace UrRobot.Coordinates
         public Angle(float v)
         {
             _rad = v;
+        }
+        public Angle(double v)
+        {
+            _rad = (float)v;
         }
         public Angle()
         {
@@ -117,6 +129,19 @@ namespace UrRobot.Coordinates
         /// <param name="_Rz">axis Rz (unit meter)</param>
         /// <param name="_G">gripper pos (0~255)</param>
         public URCoordinates(float _x, float _y, float _z, float _Rx, float _Ry, float _Rz, byte _G = 0, string unit = "M")
+        {
+            if (unit == "M")
+            {
+                X = new Unit(_x);
+                Y = new Unit(_y);
+                Z = new Unit(_z);
+                Rx = new Angle(_Rx);
+                Ry = new Angle(_Ry);
+                Rz = new Angle(_Rz);
+                Grip = _G;
+            }
+        }
+        public URCoordinates(double _x, double _y, double _z, double _Rx, double _Ry, double _Rz, byte _G = 0, string unit = "M")
         {
             if (unit == "M")
             {

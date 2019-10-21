@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UrRobot.Socket;
 using UrRobot.Coordinates;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Wpf_UrControlExample
 {
@@ -31,8 +33,22 @@ namespace Wpf_UrControlExample
 
         private void Btn_startServer_Click(object sender, RoutedEventArgs e)
         {
+
+                List<string> lstIPAddress = new List<string>();
+                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ipa in IpEntry.AddressList)
+                {
+                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                        lstIPAddress.Add(ipa.ToString());
+                }
+
+            string canBeUrIp = "";
+            foreach (string ip in lstIPAddress)
+                if (ip.IndexOf("192.168.1.") >= 0)
+                    canBeUrIp = ip;
+
             UR.stopServer();
-            UR.startServer("192.168.1.103",888);
+            UR.startServer(canBeUrIp, 888);
         }
 
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)
@@ -61,6 +77,19 @@ namespace Wpf_UrControlExample
         {
             UR.Stop();
 
+        }
+
+        private void Btn_servoj1_Click(object sender, RoutedEventArgs e)
+        {
+            // UR.goTrack(3.14f, -1.57f, 0, -1.57f, 0, 0);
+            //.1,.2,.2,0,3.14,0
+            UR.goTrack(new URCoordinates(-0.14, -0.3, 0.1, 3.14, 0, 0));
+        }
+
+        private void Btn_servoj2_Click(object sender, RoutedEventArgs e)
+        {
+            //UR.goTrack(3.14f, -1.57f, 1.57f, -1.57f, 0, 0);
+            UR.goTrack(new URCoordinates(0.15, -0.14, 0.1, 3.14, 0, 0));
         }
     }
 }

@@ -6,11 +6,16 @@ while True:
 			stopj(2)
 		elif (cmdMsg == "recordj"):
 			freedrive_mode()
+
 		elif (cmdMsg == "pservoj"):
 			pos = p[msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
 			jpos = get_inverse_kin(pos)
 			servoj(jpos)
-		
+
+		elif (cmdMsg == "pservoc"):
+			pos = p[msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
+			servoc(pos)
+
 		elif (cmdMsg == "jservoj"):
 			jpos = [msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
 			servoj(jpos)
