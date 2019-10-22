@@ -91,5 +91,20 @@ namespace Wpf_UrControlExample
             //UR.goTrack(3.14f, -1.57f, 1.57f, -1.57f, 0, 0);
             UR.goTrack(new URCoordinates(0.15, -0.14, 0.1, 3.14, 0, 0));
         }
+
+        private void Btn_record_Click(object sender, RoutedEventArgs e)
+        {
+            UR.startRecord();
+        }
+
+        private void Btn_write_Click(object sender, RoutedEventArgs e)
+        {
+            UR.Record_joint();
+        }
+
+        private void Btn_endRecord_Click(object sender, RoutedEventArgs e)
+        {
+            UR.endRecord();
+        }
     }
 }

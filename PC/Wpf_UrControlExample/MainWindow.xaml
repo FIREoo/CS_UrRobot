@@ -18,6 +18,9 @@
         <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="277" Click="Btn_robotStop_Click"/>
         <Button x:Name="btn_servoj1" Content="servoj 1" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj1_Click"/>
         <Button x:Name="btn_servoj2" Content="servoj 2" HorizontalAlignment="Left" Margin="62,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj2_Click"/>
+        <Button x:Name="btn_record" Content="record" HorizontalAlignment="Left" Margin="462,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_record_Click"/>
+        <Button x:Name="btn_write" Content="write" HorizontalAlignment="Left" Margin="547,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_write_Click"/>
+        <Button x:Name="btn_endRecord" Content="end" HorizontalAlignment="Left" Margin="632,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_endRecord_Click"/>
 
     </Grid>
 </Window>
