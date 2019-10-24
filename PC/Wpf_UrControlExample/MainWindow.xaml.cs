@@ -46,6 +46,11 @@ namespace Wpf_UrControlExample
             foreach (string ip in lstIPAddress)
                 if (ip.IndexOf("192.168.1.") >= 0)
                     canBeUrIp = ip;
+                else
+                {
+                    MessageBox.Show("沒連到UR網路?");
+                    return;
+                }
 
             UR.stopServer();
             UR.startServer(canBeUrIp, 888);
@@ -105,6 +110,21 @@ namespace Wpf_UrControlExample
         private void Btn_endRecord_Click(object sender, RoutedEventArgs e)
         {
             UR.endRecord();
+        }
+
+        private void Btn_goFile_Click(object sender, RoutedEventArgs e)
+        {
+            UR.goFile("Path\\record.path");
+        }
+
+        private void Btn_Rmovep_Click(object sender, RoutedEventArgs e)
+        {
+          UR.goRelativePosition();
+        }
+
+        private void Btn_Rmovej_Click(object sender, RoutedEventArgs e)
+        {
+            UR.goRelativeJoint(j6: 1.rad());
         }
     }
 }

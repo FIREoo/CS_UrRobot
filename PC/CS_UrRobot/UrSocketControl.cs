@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.IO;
 using UrRobot.Coordinates;
-using System.Numerics;
 
 namespace UrRobot.Socket
 {
@@ -22,13 +18,20 @@ namespace UrRobot.Socket
         pmovep = 4,
         gripper = 5,
         grip = 6,
+        Rmovep = 7,
+        Rmovej = 8,
         jog = 10,
         jservoj = 11,
-        pservoj = 121,
+        pservoj = 12,
         moveByFile = 99
     }
     public class UrSocketControl
     {
+        ~UrSocketControl()
+        {
+            stopServer();
+            //stopClient();
+        }
         public mode cmd = mode.stop;
 
         static bool serverOn = false;
@@ -145,7 +148,7 @@ namespace UrRobot.Socket
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg);//joint
                     }
-                    else if (cmd == mode.pservoj)
+                    else if (cmd == mode.pservoj)//done
                     {
                         if (!_sendMsg("pservoj", ref cmd)) break;
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
@@ -155,6 +158,33 @@ namespace UrRobot.Socket
 
                         sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
                         Console.WriteLine(sMsg);//position
+                    }
+                    else if (cmd == mode.Rmovep)
+                    {
+                        if (!_sendMsg("Rmovep", ref cmd)) break;
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+
+                        if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
+                        if (sMsg != "UR:done")
+                            Console.WriteLine("error!! UR robot didn't finish work?");
+                        cmd = mode.stop;
+                    }
+                    else if (cmd == mode.Rmovej)
+                    {
+                        if (!_sendMsg("Rmovej", ref cmd)) break;
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
+
+                        if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+
+                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                        Console.WriteLine(sMsg);
+                        if (sMsg != "UR:done")
+                            Console.WriteLine("error!! UR robot didn't finish work?");
+                        cmd = mode.stop;
                     }
                     else if (cmd == mode.recordj)//done
                     {
@@ -331,11 +361,73 @@ namespace UrRobot.Socket
             cmd = mode.pservoj;
         }
 
+        public void goRelativePosition(URCoordinates pos)
+        {
+            val_pos[0] = pos.X.M;
+            val_pos[1] = pos.Y.M;
+            val_pos[2] = pos.Z.M;
+            val_pos[3] = pos.Rx.rad;
+            val_pos[4] = pos.Ry.rad;
+            val_pos[5] = pos.Rz.rad;
+            cmd = mode.Rmovep;
+            while (cmd != mode.stop) ;
+        }
+        public void goRelativePosition(Unit x = null, Unit y = null, Unit z = null, Angle Rx = null, Angle Ry = null, Angle Rz = null)
+        {
+            if (x == null) x = new Unit();
+            if (y == null) y = new Unit();
+            if (z == null) z = new Unit();
+            if (Rx == null) Rx = new Angle();
+            if (Ry == null) Ry = new Angle();
+            if (Rz == null) Rz = new Angle();
 
-        public void goFile(string file = "")
+            val_pos[0] = x.M;
+            val_pos[1] = y.M;
+            val_pos[2] = z.M;
+            val_pos[3] = Rx.rad;
+            val_pos[4] = Ry.rad;
+            val_pos[5] = Rz.rad;
+            cmd = mode.Rmovep;
+            while (cmd != mode.stop) ;
+        }
+        public void goRelativeJoint(float j1 = 0, float j2 = 0, float j3 = 0, float j4 = 0, float j5 = 0, float j6 = 0)
+        {
+            val_joint[0] = j1;
+            val_joint[1] = j2;
+            val_joint[2] = j3;
+            val_joint[3] = j4;
+            val_joint[4] = j5;
+            val_joint[5] = j6;
+            cmd = mode.Rmovej;
+            while (cmd != mode.stop) ;
+        }
+        public void goRelativeJoint(Angle j1 = null, Angle j2 = null, Angle j3 = null, Angle j4 = null, Angle j5 = null, Angle j6 = null)
+        {
+            if (j1 == null) j1 = new Angle();
+            if (j2 == null) j2 = new Angle();
+            if (j3 == null) j3 = new Angle();
+            if (j4 == null) j4 = new Angle();
+            if (j5 == null) j5 = new Angle();
+            if (j6 == null) j6 = new Angle();
+
+            val_joint[0] = j1.rad;
+            val_joint[1] = j2.rad;
+            val_joint[2] = j3.rad;
+            val_joint[3] = j4.rad;
+            val_joint[4] = j5.rad;
+            val_joint[5] = j6.rad;
+            cmd = mode.Rmovej;
+            while (cmd != mode.stop) ;
+        }
+        public bool goFile(string file = "")
         {
             if (file == "")
                 file = fileFullPath;
+            if (!File.Exists(file))
+            {
+                Console.WriteLine("file doesn't exist!");
+                return false;
+            }
 
             string[] fileLine = System.IO.File.ReadAllLines(file);
             foreach (string line in fileLine)
@@ -353,6 +445,18 @@ namespace UrRobot.Socket
                     string[] pos = info.Split(',');
                     goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
                 }
+                else if (theCmd == "Rmovej")
+                {
+                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                    string[] pos = info.Split(',');
+                    goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                }
+                else if (theCmd == "Rmovep")
+                {
+                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                    string[] pos = info.Split(',');
+                    goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                }
                 else if (theCmd == "rq_move")
                 {
                     string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
@@ -363,7 +467,13 @@ namespace UrRobot.Socket
                     string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
                     Thread.Sleep(info.toInt());
                 }
+                else if (theCmd == "")
+                    continue;
+                else
+                    Console.WriteLine($"Error at : {theCmd}");
             }
+
+            return true;
         }
 
         #region //---Record---//
@@ -379,8 +489,12 @@ namespace UrRobot.Socket
                 return;
             }
             isRecord = true;
+            if (!Directory.Exists(rootPath))
+                Directory.CreateDirectory(rootPath);
+
             fileFullPath = rootPath + fileName;
-            txt_record = new StreamWriter(fileFullPath, false);//false覆寫
+
+            txt_record = new StreamWriter(fileFullPath, false);//false =>覆寫
             cmd = mode.recordj;
         }
 
@@ -441,64 +555,4 @@ namespace UrRobot.Socket
 
 
     }
-
-   public class IK
-    {
-        // d (unit: mm)
-        double d1 = 0.1519;
-        double d2 = 0;
-        double d3 = 0;
-        double d4 = 0.11235;
-        double d5 = 0.08535;
-        double d6 = 0.0819;
-
-        // a (unit: mm)
-        double a1 = 0;
-        double a2 = -0.24365;
-        double a3 = -0.21325;
-        double a4 = 0;
-        double a5 = 0;
-        double a6 = 0;
-
-        // List type of D-H parameter
-        // Do not remove these
-        public IK()
-        {
-            double[] d = new[] { d1, d2, d3, d4, d5, d6 };// unit: mm
-            double[] a = new[] { a1, a2, a3, a4, a5, a6 };// unit: mm
-            double[] alpha = new[] { Math.PI / 2d, 0, 0, Math.PI / 2d, -Math.PI / 2d, 0 };// unit: radian
-        }
-
-        public void ur2ros(double px, double py, double pz, double Rx, double Ry, double Rz)
-        {
-            double[] ros_pose = new double[7];
-
-            ros_pose[0] = px;
-            ros_pose[1] = py;
-            ros_pose[2] = pz;
-
-            double angle = Math.Sqrt(Rx * Rx + Ry * Ry + Rz * Rz);
-            double[] direction = new[] { Rx / angle, Ry / angle, Rz / angle };
-
-    // np_T = tf.rotation_matrix(angle, direction)
-    //np_q = tf.quaternion_from_matrix(np_T)
-                
-    //ros_pose.orientation.x = np_q[0]
-    //ros_pose.orientation.y = np_q[1]
-    //ros_pose.orientation.z = np_q[2]
-    //ros_pose.orientation.w = np_q[3]
-
-
-
-        }
-        public void rotation_matrix(double angle,double[] direction)
-        {
-            double sina = Math.Sin(angle);
-            double cosa = Math.Cos(angle);
-            double[,] R = new[,] { { cosa, 0, 0 }, { 0, cosa, 0 }, { 0, 0, cosa } };
-        }
-
-
-    }
-
 }

@@ -32,6 +32,15 @@ namespace UrRobot.Coordinates
         {
             return new Angle((float)value);
         }
+        static public Angle deg(this double value)
+        {
+            return new Angle(value * (float)Math.PI / 180.0f);
+        }
+        static public Angle deg(this int value)
+        {
+            return new Angle(value * (float)Math.PI / 180.0f);
+        }
+
         static public int toInt(this string str)
         {
             return int.Parse(str);
