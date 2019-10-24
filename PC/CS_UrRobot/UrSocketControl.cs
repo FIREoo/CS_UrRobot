@@ -83,7 +83,7 @@ namespace UrRobot.Socket
             if (serverOn) // is the server is on, return
             { Console.WriteLine("已經在執行了"); return; }
 
-            if(ip == "auto" || ip == "")
+            if (ip == "auto" || ip == "Auto" || ip == "")
             {
                 List<string> lstIPAddress = new List<string>();
                 IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
