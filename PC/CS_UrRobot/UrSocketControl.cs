@@ -26,6 +26,16 @@ namespace UrRobot.Socket
         pservoj = 12,
         moveByFile = 99
     }
+
+    public enum  tcpState
+    {
+        none = -1,
+        startListener = 1,
+        waitAccept = 2,
+        connect = 3,
+        disconnect = 4
+    }
+
     public class UrSocketControl
     {
         ~UrSocketControl()
@@ -34,7 +44,7 @@ namespace UrRobot.Socket
             //stopClient();
         }
         public mode cmd = mode.stop;
-
+ 
         static bool serverOn = false;
         public bool isServerRunning
         {
@@ -44,6 +54,9 @@ namespace UrRobot.Socket
         NetworkStream myNetworkStream;
         TcpClient myTcpClient;
         private bool clientConect = false;
+
+        public delegate void ServerState(tcpState state);
+        public event ServerState stateChange;
 
         #region //---Client---//
         public void creatClient(string IP)
