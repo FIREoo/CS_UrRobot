@@ -34,26 +34,8 @@ namespace Wpf_UrControlExample
         private void Btn_startServer_Click(object sender, RoutedEventArgs e)
         {
 
-                List<string> lstIPAddress = new List<string>();
-                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (IPAddress ipa in IpEntry.AddressList)
-                {
-                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
-                        lstIPAddress.Add(ipa.ToString());
-                }
-
-            string canBeUrIp = "";
-            foreach (string ip in lstIPAddress)
-                if (ip.IndexOf("192.168.1.") >= 0)
-                    canBeUrIp = ip;
-                else
-                {
-                    MessageBox.Show("沒連到UR網路?");
-                    return;
-                }
-
             UR.stopServer();
-            UR.startServer(canBeUrIp, 888);
+            UR.startServer("auto", 888);
         }
 
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)

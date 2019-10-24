@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -81,6 +82,26 @@ namespace UrRobot.Socket
         {
             if (serverOn) // is the server is on, return
             { Console.WriteLine("已經在執行了"); return; }
+
+            if(ip == "auto" || ip == "")
+            {
+                List<string> lstIPAddress = new List<string>();
+                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ipa in IpEntry.AddressList)
+                {
+                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                        lstIPAddress.Add(ipa.ToString());
+                }
+
+                foreach (string find_ip in lstIPAddress)
+                    if (find_ip.IndexOf("192.168.1.") >= 0)
+                        ip = find_ip;
+                    else
+                    {
+                        Console.WriteLine("沒連到UR網路?");
+                        return;
+                    }
+            }
 
             IPAddress IPAddress = IPAddress.Parse(ip);
             TcpListener tcpListener = new TcpListener(IPAddress, port);
