@@ -27,13 +27,13 @@ namespace UrRobot.Socket
         moveByFile = 99
     }
 
-    public enum  tcpState
+    public enum tcpState
     {
         none = -1,
         startListener = 1,
         waitAccept = 2,
-        connect = 3,
-        disconnect = 4
+        Connect = 3,
+        Disconnect = 4
     }
 
     public class UrSocketControl
@@ -44,7 +44,7 @@ namespace UrRobot.Socket
             //stopClient();
         }
         public mode cmd = mode.stop;
- 
+
         static bool serverOn = false;
         public bool isServerRunning
         {
@@ -128,145 +128,143 @@ namespace UrRobot.Socket
             {
                 tcp.Start();
                 Console.WriteLine("Start server at:" + ((IPEndPoint)tcp.LocalEndpoint).Address.ToString());
-                //OnLinkState(new LinkArgs("Wait Connect"));
+                stateChange(tcpState.startListener);
             }
             catch (Exception ex) { Console.WriteLine("tcp start error\n" + ex); return; }
 
             TcpClient UR_Client = tcp.AcceptTcpClient();
             NetworkStream stream;
-            if (UR_Client.Client.Connected)
+
+            Console.WriteLine("Client is connect");
+            stream = UR_Client.GetStream();
+            stream.WriteTimeout = 100;
+            stateChange(tcpState.Connect);
+            serverOn = true;
+            cmd = mode.stop;
+            while (serverOn && UR_Client.Client.Connected)
             {
-                Console.WriteLine("Client is connect");
-                stream = UR_Client.GetStream();
-                stream.WriteTimeout = 100;
-                //OnLinkState(new LinkArgs("Connect"));
-                serverOn = true;
-                cmd = mode.stop;
-                while (serverOn)
+                if (cmd == mode.pmovep)//done
                 {
-                    if (cmd == mode.pmovep)//done
-                    {
-                        if (!_sendMsg("pmovep", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("pmovep", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
 
-                        if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
-                        if (sMsg != "UR:done")
-                            Console.WriteLine("error!! UR robot didn't finish work?");
-                        cmd = mode.stop;
-                    }
-                    else if (cmd == mode.jmovej)//done
-                    {
-                        if (!_sendMsg("jmovej", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
+                    cmd = mode.stop;
+                }
+                else if (cmd == mode.jmovej)//done
+                {
+                    if (!_sendMsg("jmovej", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
 
-                        if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
-                        if (sMsg != "UR:done")
-                            Console.WriteLine("error!! UR robot didn't finish work?");
-                        cmd = mode.stop;
-                    }
-                    else if (cmd == mode.jservoj)//done
-                    {
-                        if (!_sendMsg("jservoj", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
+                    cmd = mode.stop;
+                }
+                else if (cmd == mode.jservoj)//done
+                {
+                    if (!_sendMsg("jservoj", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
 
-                        if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);//joint
-                    }
-                    else if (cmd == mode.pservoj)//done
-                    {
-                        if (!_sendMsg("pservoj", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);//joint
+                }
+                else if (cmd == mode.pservoj)//done
+                {
+                    if (!_sendMsg("pservoj", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
 
-                        if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);//position
-                    }
-                    else if (cmd == mode.Rmovep)
-                    {
-                        if (!_sendMsg("Rmovep", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);//position
+                }
+                else if (cmd == mode.Rmovep)//done
+                {
+                    if (!_sendMsg("Rmovep", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
 
-                        if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
-                        if (sMsg != "UR:done")
-                            Console.WriteLine("error!! UR robot didn't finish work?");
-                        cmd = mode.stop;
-                    }
-                    else if (cmd == mode.Rmovej)
-                    {
-                        if (!_sendMsg("Rmovej", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
+                    cmd = mode.stop;
+                }
+                else if (cmd == mode.Rmovej)//done
+                {
+                    if (!_sendMsg("Rmovej", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
 
-                        if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
-                        if (sMsg != "UR:done")
-                            Console.WriteLine("error!! UR robot didn't finish work?");
-                        cmd = mode.stop;
-                    }
-                    else if (cmd == mode.recordj)//done
-                    {
-                        if (!_sendMsg("recordj", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);//拿到joint
-                    }
-                    else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
-                    {
-                    }
-                    else if (cmd == mode.jog)//未完成
-                    {
-                    }
-                    else if (cmd == mode.gripper)//done
-                    {
-                        if (!_sendMsg("gripper", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
+                    cmd = mode.stop;
+                }
+                else if (cmd == mode.recordj)//done
+                {
+                    if (!_sendMsg("recordj", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);//拿到joint
+                }
+                else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
+                {
+                }
+                else if (cmd == mode.jog)//未完成
+                {
+                }
+                else if (cmd == mode.gripper)//done
+                {
+                    if (!_sendMsg("gripper", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
 
-                        if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]", ref cmd)) break;
 
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg);
-                        if (sMsg != "UR:done")
-                            Console.WriteLine("error!! UR robot didn't finish work?");
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
 
-                        cmd = mode.stop;
-                    }
-                    else if (cmd == mode.grip)//遺棄
-                    {
-                    }
-                    else if (cmd == mode.stop)//done
-                    {
-                        if (!_sendMsg("stop", ref cmd)) break;
-                        sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
-                        Console.WriteLine(sMsg); //拿到 postion
-                    }
-                    else if (cmd == mode.End)//done
-                    {
-                        break;
-                    }
-                }//while serverOn
-                stream.Close();
+                    cmd = mode.stop;
+                }
+                else if (cmd == mode.grip)//遺棄
+                {
+                }
+                else if (cmd == mode.stop)//done
+                {
+                    if (!_sendMsg("stop", ref cmd)) break;
+                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg); //拿到 postion
+                }
+                else if (cmd == mode.End)//done
+                {
+                    break;
+                }
+            }//while serverOn
 
-            }//if client connect
+            stream.Close();
             UR_Client.Dispose();
             tcp.Stop();
-            //OnLinkState(new LinkArgs("Disconnect"));
+            stateChange(tcpState.Disconnect);
             Console.WriteLine("server disconnect");
             serverOn = false;
 
@@ -318,7 +316,9 @@ namespace UrRobot.Socket
             serverOn = false;
             if (thread_server != null)
                 thread_server.Abort();
-            //OnLinkState(new LinkArgs("disconnect"));
+
+            stateChange(tcpState.Disconnect);
+
         }
         #endregion //---Server---//
 
