@@ -26,7 +26,6 @@ namespace UrRobot.Socket
         pservoj = 12,
         moveByFile = 99
     }
-
     public enum tcpState
     {
         none = -1,
@@ -117,10 +116,12 @@ namespace UrRobot.Socket
 
             try
             {
+                stateChange?.Invoke(tcpState.waitAccept);
                 acceptSocket = serverListener.AcceptSocket();//等待接受，接受後繼續執行
             }
             catch
             {
+                stateChange?.Invoke(tcpState.none);
                 Console.WriteLine("Waiting accept socket abort!");
                 return;
             }
@@ -293,7 +294,6 @@ namespace UrRobot.Socket
         }
 
 
-
         public void stopServer()
         {
             serverOn = false;
@@ -443,13 +443,15 @@ namespace UrRobot.Socket
         }
         public bool goFile(string file = "")
         {
-            if (file == "")
+            if (file == "")//使用上一次的紀錄
                 file = fileFullPath;
             if (!File.Exists(file))
             {
                 Console.WriteLine("file doesn't exist!");
                 return false;
             }
+            if (file.IndexOf(".path") < 0)
+                file += ".path";
 
             string[] fileLine = System.IO.File.ReadAllLines(file);
             foreach (string line in fileLine)
@@ -499,7 +501,7 @@ namespace UrRobot.Socket
         }
 
         #region //---Record---//
-        string rootPath = "Path\\";
+       public string rootPath = "Path\\";
         string fileFullPath = "";
         bool isRecord = false;
         StreamWriter txt_record;
@@ -513,6 +515,9 @@ namespace UrRobot.Socket
             isRecord = true;
             if (!Directory.Exists(rootPath))
                 Directory.CreateDirectory(rootPath);
+
+            if(fileName.IndexOf(".path")<0)
+                fileName += ".path";
 
             fileFullPath = rootPath + fileName;
 
@@ -547,6 +552,7 @@ namespace UrRobot.Socket
             }
             if (withMove)
                 goGripper(pos);
+            cmd = mode.recordj;
             txt_record.WriteLine($"rq_move({pos})");
         }
         public void Record_sleep(int ms)
@@ -563,6 +569,7 @@ namespace UrRobot.Socket
         {
             if (isRecord == true)
             {
+                isRecord = false;
                 cmd = mode.stop;
                 txt_record.Flush();
                 txt_record.Close();
