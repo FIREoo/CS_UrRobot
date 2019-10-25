@@ -91,6 +91,9 @@ namespace UrRobot.Socket
         #region  //---Server---//
         Thread thread_server;
         string sMsg = "";
+
+        TcpListener serverListener;
+        System.Net.Sockets.Socket acceptSocket;
         public void startServer(string ip, int port)
         {
             if (serverOn) // is the server is on, return
@@ -117,40 +120,47 @@ namespace UrRobot.Socket
             }
 
             IPAddress IPAddress = IPAddress.Parse(ip);
-            TcpListener tcpListener = new TcpListener(IPAddress, port);
-            thread_server = new Thread(() => Server(tcpListener, ref cmd));
+            serverListener = new TcpListener(IPAddress, port);
+            thread_server = new Thread(() => Server());
             thread_server.Start();
         }
-        private void Server(TcpListener tcp, ref mode cmd)
+
+        private void Server()
         {
             //creat tcp
             try
             {
-                tcp.Start();
-                Console.WriteLine("Start server at:" + ((IPEndPoint)tcp.LocalEndpoint).Address.ToString());
+                serverListener.Start();
+                Console.WriteLine("Start server at:" + ((IPEndPoint)serverListener.LocalEndpoint).Address.ToString());
                 stateChange(tcpState.startListener);
             }
             catch (Exception ex) { Console.WriteLine("tcp start error\n" + ex); return; }
 
-            TcpClient UR_Client = tcp.AcceptTcpClient();
-            NetworkStream stream;
+            try
+            {
+                acceptSocket = serverListener.AcceptSocket();//等待接受，接受後繼續執行
+            }
+            catch
+            {
+                Console.WriteLine("Waiting accept socket abort!");
+                return;
+            }
 
             Console.WriteLine("Client is connect");
-            stream = UR_Client.GetStream();
-            stream.WriteTimeout = 100;
             stateChange(tcpState.Connect);
+
             serverOn = true;
             cmd = mode.stop;
-            while (serverOn && UR_Client.Client.Connected)
+            while (serverOn && acceptSocket.Connected)
             {
                 if (cmd == mode.pmovep)//done
                 {
-                    if (!_sendMsg("pmovep", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("pmovep")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -158,13 +168,13 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.jmovej)//done
                 {
-                    if (!_sendMsg("jmovej", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("jmovej")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -172,34 +182,34 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.jservoj)//done
                 {
-                    if (!_sendMsg("jservoj", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("jservoj")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);//joint
                 }
                 else if (cmd == mode.pservoj)//done
                 {
-                    if (!_sendMsg("pservoj", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("pservoj")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);//position
                 }
                 else if (cmd == mode.Rmovep)//done
                 {
-                    if (!_sendMsg("Rmovep", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("Rmovep")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -207,13 +217,13 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.Rmovej)//done
                 {
-                    if (!_sendMsg("Rmovej", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("Rmovej")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -221,8 +231,8 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.recordj)//done
                 {
-                    if (!_sendMsg("recordj", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("recordj")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);//拿到joint
                 }
                 else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
@@ -233,13 +243,13 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.gripper)//done
                 {
-                    if (!_sendMsg("gripper", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("gripper")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]", ref cmd)) break;
+                    if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]")) break;
 
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -251,8 +261,8 @@ namespace UrRobot.Socket
                 }
                 else if (cmd == mode.stop)//done
                 {
-                    if (!_sendMsg("stop", ref cmd)) break;
-                    sMsg = _waitRead(ref cmd); if (sMsg == "End") break;
+                    if (!_sendMsg("stop")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg); //拿到 postion
                 }
                 else if (cmd == mode.End)//done
@@ -261,49 +271,41 @@ namespace UrRobot.Socket
                 }
             }//while serverOn
 
-            stream.Close();
-            UR_Client.Dispose();
-            tcp.Stop();
+            acceptSocket.Close();
+            serverListener.Stop();
             stateChange(tcpState.Disconnect);
             Console.WriteLine("server disconnect");
             serverOn = false;
 
             #region subfunction
-            string _waitRead(ref mode c)
-            {
-                string msg_read = "";
-                while (serverOn)
-                {
-                    byte[] arrayBytesRequest = new byte[UR_Client.Available];
-                    try
-                    {
-                        int nRead = stream.Read(arrayBytesRequest, 0, arrayBytesRequest.Length);//讀取UR手臂的數值
-                        if (nRead > 0)//確認有收到東西後
-                        {
-                            msg_read = ASCIIEncoding.ASCII.GetString(arrayBytesRequest);
-                            return msg_read;
-                        }//read>0 //所以如果沒有收到的話就繼續再收一次
-                    }
-                    catch
-                    {
-                        c = mode.End;
-                        return "End";
-                    }
-                }
-                return "End";
-            }
-            bool _sendMsg(string str, ref mode c)
+            string _waitRead()
             {
                 try
                 {
-                    byte[] arrayBytesAnswer = ASCIIEncoding.ASCII.GetBytes(str);
-                    stream.Write(arrayBytesAnswer, 0, arrayBytesAnswer.Length);
+                    int bufferSize = myTcpClient.ReceiveBufferSize;
+                    byte[] myBufferBytes = new byte[bufferSize];
+                    int L = acceptSocket.Receive(myBufferBytes);
+                    string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
+                    return msg_read;
                 }
                 catch
                 {
-                    //可能是client先結束了
-                    Console.WriteLine("可能是client先結束了");
-                    c = mode.End;
+                    Console.WriteLine("Socket read fail");
+                    cmd = mode.End;
+                    return "End";
+                }
+            }
+            bool _sendMsg(string str)
+            {
+                try
+                {
+                    Byte[] myBytes = Encoding.ASCII.GetBytes(str);
+                    acceptSocket.Send(myBytes, myBytes.Length, 0);
+                }
+                catch
+                {
+                    Console.WriteLine("Socket send fail"); //可能是client先結束了
+                    cmd = mode.End;
                     return false;
                 }
                 return true;
@@ -311,9 +313,16 @@ namespace UrRobot.Socket
             #endregion subfunction
         }
 
+
+
         public void stopServer()
         {
             serverOn = false;
+            if (acceptSocket != null)
+                acceptSocket.Close();
+            if (serverListener != null)
+                serverListener.Stop();
+
             if (thread_server != null)
                 thread_server.Abort();
 
