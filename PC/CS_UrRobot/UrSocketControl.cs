@@ -54,15 +54,59 @@ namespace UrRobot.Socket
         public event ServerState stateChange;
 
         #region //---Client---//
+        bool isConect = false;
+        TcpClient urTcpClient;
+       System.Net.Sockets.Socket urSocket;
         public void creatClient(string IP)
         {
-            string hostName = IP;
+            if (isConect) { Console.WriteLine("已經連線"); return; }
+
+            if (IP == "auto" || IP == "Auto" || IP == "")
+            {
+                List<string> lstIPAddress = new List<string>();
+                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ipa in IpEntry.AddressList)
+                {
+                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                        lstIPAddress.Add(ipa.ToString());
+                }
+
+                foreach (string find_ip in lstIPAddress)
+                    if (find_ip.IndexOf("192.168.1.") >= 0)
+                        IP = find_ip;
+                    else
+                    {
+                        Console.WriteLine("沒連到UR網路?");
+                        return;
+                    }
+            }
             int connectPort = 30002;
+
+            urTcpClient = new TcpClient();
+            try
+            {
+                urTcpClient.Connect(IP, connectPort);
+                urSocket = urTcpClient.Client;
+                Console.WriteLine("連線成功 !!");
+                isConect = true;
+            }
+            catch
+            {
+                Console.WriteLine
+                           ("主機 {0} 通訊埠 {1} 無法連接  !!", IP, connectPort);
+                return;
+            }
         }
 
         public void client_SendData(string msg)
         {
+            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
+            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
+            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
 
+            String str = msg;
+            Byte[] myBytes = Encoding.ASCII.GetBytes(str);
+            urSocket.Send(myBytes, myBytes.Length, 0);
         }
         #endregion ---Client---
 
