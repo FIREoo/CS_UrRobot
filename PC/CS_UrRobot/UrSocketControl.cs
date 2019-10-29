@@ -359,6 +359,20 @@ namespace UrRobot.Socket
             cmd = mode.stop;
         }
 
+        public bool getPosition(out URCoordinates pos)
+        {
+            if (cmd != mode.stop)
+            {
+                pos = new URCoordinates();
+                return false;
+            }
+
+            pos =  URCoordinates.str2urc(sMsg);
+
+            return true;
+
+        }
+
         float[] val_grip = new float[3];
         public void goGripper(int pos, int force = 0, int speed = 0, bool wait = true)
         {

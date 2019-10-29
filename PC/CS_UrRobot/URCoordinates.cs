@@ -12,19 +12,31 @@ namespace UrRobot.Coordinates
         {
             return new Unit((float)value);
         }
-        static public Unit M(this int value)
+        static public Unit M(this float value)
         {
             return new Unit((float)value);
         }
-        static public Unit mm(this int value)
+        static public Unit M(this int value)
         {
-            return new Unit((float)value/1000f);
+            return new Unit((float)value);
         }
         static public Unit mm(this double value)
         {
             return new Unit((float)value / 1000f);
         }
+        static public Unit mm(this float value)
+        {
+            return new Unit((float)value / 1000f);
+        }
+        static public Unit mm(this int value)
+        {
+            return new Unit((float)value/1000f);
+        }
         static public Angle rad(this double value)
+        {
+            return new Angle((float)value);
+        }
+        static public Angle rad(this float value)
         {
             return new Angle((float)value);
         }
@@ -33,6 +45,10 @@ namespace UrRobot.Coordinates
             return new Angle((float)value);
         }
         static public Angle deg(this double value)
+        {
+            return new Angle(value * (float)Math.PI / 180.0f);
+        }
+        static public Angle deg(this float value)
         {
             return new Angle(value * (float)Math.PI / 180.0f);
         }
@@ -116,6 +132,16 @@ namespace UrRobot.Coordinates
         public Angle Rz = new Angle();
         public byte Grip = 0;
 
+        public URCoordinates()
+        {
+            X = 0.M();
+            Y = 0.M();
+            Z = 0.M();
+            Rx = 0.rad();
+            Ry = 0.rad();
+            Rz = 0.rad();
+            Grip = 0;
+        }
 
         public URCoordinates(Unit _x, Unit _y, Unit _z, Angle _Rx, Angle _Ry, Angle _Rz, byte _G = 0)
         {
@@ -206,6 +232,23 @@ namespace UrRobot.Coordinates
                 rtn += "]";
             if (format.IndexOf(')') >= 0)
                 rtn += ")";
+
+            return rtn;
+
+        }
+
+        public static URCoordinates str2urc(string str)
+        {
+            str.Substring(str.IndexOf("p["), str.IndexOf("]")- str.IndexOf("p[")-1);
+
+            string[] pos = str.Split(',');
+            URCoordinates rtn = new URCoordinates(0,0,0,0,0,0,0);
+            rtn.X.M = pos[0].toFloat();
+            rtn.Y.M = pos[1].toFloat();
+            rtn.Z.M = pos[2].toFloat();
+            rtn.Rx.rad = pos[3].toFloat();
+            rtn.Ry.rad = pos[4].toFloat();
+            rtn.Rz.rad = pos[5].toFloat();
 
             return rtn;
 
