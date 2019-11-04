@@ -53,10 +53,13 @@ namespace UrRobot.Socket
         public delegate void ServerState(tcpState state);
         public event ServerState stateChange;
 
+        public delegate void ControlFunction();
+        public ControlFunction dynamicGrip;
+
         #region //---Client---//
         bool isConect = false;
         TcpClient urTcpClient;
-       System.Net.Sockets.Socket urSocket;
+        System.Net.Sockets.Socket urSocket;
         public void creatClient(string IP)
         {
             if (isConect) { Console.WriteLine("已經連線"); return; }
@@ -312,7 +315,7 @@ namespace UrRobot.Socket
                     string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
                     return msg_read;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Socket read fail :" + ex);
                     cmd = mode.End;
@@ -367,7 +370,7 @@ namespace UrRobot.Socket
                 return false;
             }
 
-            pos =  URCoordinates.str2urc(sMsg);
+            pos = URCoordinates.str2urc(sMsg);
 
             return true;
 
@@ -499,17 +502,24 @@ namespace UrRobot.Socket
             cmd = mode.Rmovej;
             while (cmd != mode.stop) ;
         }
+        public void goFunction()
+        {
+            dynamicGrip.Invoke();
+        }
         public bool goFile(string file = "")
         {
             if (file == "")//使用上一次的紀錄
                 file = fileFullPath;
+            if (file.IndexOf(rootPath) < 0)
+                file = rootPath + file;
+            if (file.IndexOf(".path") < 0)
+                file += ".path";
             if (!File.Exists(file))
             {
                 Console.WriteLine("file doesn't exist!");
                 return false;
             }
-            if (file.IndexOf(".path") < 0)
-                file += ".path";
+
 
             string[] fileLine = System.IO.File.ReadAllLines(file);
             foreach (string line in fileLine)
@@ -549,6 +559,10 @@ namespace UrRobot.Socket
                     string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
                     Thread.Sleep(info.toInt());
                 }
+                else if (theCmd == "function")
+                {
+                    goFunction();//會等 Function結束才會下一行，所以不用擔心手臂繼續會跑下一行指令
+                }
                 else if (theCmd == "")
                     continue;
                 else
@@ -559,7 +573,7 @@ namespace UrRobot.Socket
         }
 
         #region //---Record---//
-       public string rootPath = "Path\\";
+        public string rootPath = "Path\\";
         string fileFullPath = "";
         bool isRecord = false;
         StreamWriter txt_record;
@@ -574,7 +588,7 @@ namespace UrRobot.Socket
             if (!Directory.Exists(rootPath))
                 Directory.CreateDirectory(rootPath);
 
-            if(fileName.IndexOf(".path")<0)
+            if (fileName.IndexOf(".path") < 0)
                 fileName += ".path";
 
             fileFullPath = rootPath + fileName;

@@ -30,7 +30,7 @@ namespace UrRobot.Coordinates
         }
         static public Unit mm(this int value)
         {
-            return new Unit((float)value/1000f);
+            return new Unit((float)value / 1000f);
         }
         static public Angle rad(this double value)
         {
@@ -131,6 +131,35 @@ namespace UrRobot.Coordinates
         public Angle Ry = new Angle();
         public Angle Rz = new Angle();
         public byte Grip = 0;
+
+        public static bool operator ==(URCoordinates p1, URCoordinates p2)
+        {
+            if (
+                    p1.X.M == p2.X.M &&
+                    p1.Y.M == p2.Y.M &&
+                    p1.Z.M == p2.Z.M &&
+                    p1.Rx.rad == p2.Rx.rad &&
+                    p1.Ry.rad == p2.Ry.rad &&
+                     p1.Rz.rad == p2.Rz.rad
+                 )
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(URCoordinates p1, URCoordinates p2)
+        {
+            if (
+                    p1.X.M == p2.X.M &&
+                    p1.Y.M == p2.Y.M &&
+                    p1.Z.M == p2.Z.M &&
+                    p1.Rx.rad == p2.Rx.rad &&
+                    p1.Ry.rad == p2.Ry.rad &&
+                     p1.Rz.rad == p2.Rz.rad
+                 )
+                return false;
+            else
+                return true;
+        }
 
         public URCoordinates()
         {
@@ -239,10 +268,10 @@ namespace UrRobot.Coordinates
 
         public static URCoordinates str2urc(string str)
         {
-            str.Substring(str.IndexOf("p["), str.IndexOf("]")- str.IndexOf("p[")-1);
+            str.Substring(str.IndexOf("p["), str.IndexOf("]") - str.IndexOf("p[") - 1);
 
             string[] pos = str.Split(',');
-            URCoordinates rtn = new URCoordinates(0,0,0,0,0,0,0);
+            URCoordinates rtn = new URCoordinates(0, 0, 0, 0, 0, 0, 0);
             rtn.X.M = pos[0].toFloat();
             rtn.Y.M = pos[1].toFloat();
             rtn.Z.M = pos[2].toFloat();
