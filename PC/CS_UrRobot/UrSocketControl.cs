@@ -24,6 +24,7 @@ namespace UrRobot.Socket
         jog = 10,
         jservoj = 11,
         pservoj = 12,
+        pmovej = 13,
         moveByFile = 99
     }
     public enum tcpState
@@ -53,8 +54,11 @@ namespace UrRobot.Socket
         public delegate void ServerState(tcpState state);
         public event ServerState stateChange;
 
-        public delegate void ControlFunction();
+        public delegate bool ControlFunction(string msg);
         public ControlFunction dynamicGrip;
+
+        public delegate void URmsg(string msg);
+        public URmsg UrPosGet;
 
         #region //---Client---//
         bool isConect = false;
@@ -110,6 +114,10 @@ namespace UrRobot.Socket
             String str = msg;
             Byte[] myBytes = Encoding.ASCII.GetBytes(str);
             urSocket.Send(myBytes, myBytes.Length, 0);
+        }
+        public void closeClient()
+        {
+            urSocket.Close();
         }
         #endregion ---Client---
 
@@ -183,6 +191,19 @@ namespace UrRobot.Socket
                 if (cmd == mode.pmovep)//done
                 {
                     if (!_sendMsg("pmovep")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
+
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+
+                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);
+                    if (sMsg != "UR:done")
+                        Console.WriteLine("error!! UR robot didn't finish work?");
+                    cmd = mode.stop;
+                }
+                if (cmd == mode.pmovej)//有些時候會有動作無法直線到那邊 就會卡住 或是 有時會算錯Rx Ry Rz 就可以用這個，但是!! 給太近的點就會錯誤
+                {
+                    if (!_sendMsg("pmovej")) break;
                     sMsg = _waitRead(); if (sMsg == "End") break;
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
@@ -291,13 +312,14 @@ namespace UrRobot.Socket
                     if (!_sendMsg("stop")) break;
                     sMsg = _waitRead(); if (sMsg == "End") break;
                     Console.WriteLine(sMsg); //拿到 postion
+                    //UrPosGet?.Invoke(sMsg);
                 }
                 else if (cmd == mode.End)//done
                 {
                     break;
                 }
             }//while serverOn
-
+            cmd = mode.End;
             acceptSocket.Close();
             serverListener.Stop();
             stateChange?.Invoke(tcpState.Disconnect);
@@ -362,7 +384,7 @@ namespace UrRobot.Socket
             cmd = mode.stop;
         }
 
-        public bool getPosition(out URCoordinates pos)
+        public bool getPosition(ref URCoordinates pos)
         {
             if (cmd != mode.stop)
             {
@@ -394,7 +416,7 @@ namespace UrRobot.Socket
             cmd = mode.gripper;
 
             if (wait)
-                while (cmd != mode.stop) ;
+                while (cmd != mode.stop && cmd != mode.End) ;
         }
 
         float[] val_pos = new float[6];
@@ -407,7 +429,18 @@ namespace UrRobot.Socket
             val_pos[4] = pos.Ry.rad;
             val_pos[5] = pos.Rz.rad;
             cmd = mode.pmovep;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
+        }
+        public void goPosition2(URCoordinates pos)
+        {
+            val_pos[0] = pos.X.M;
+            val_pos[1] = pos.Y.M;
+            val_pos[2] = pos.Z.M;
+            val_pos[3] = pos.Rx.rad;
+            val_pos[4] = pos.Ry.rad;
+            val_pos[5] = pos.Rz.rad;
+            cmd = mode.pmovej;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
 
         float[] val_joint = new float[6];
@@ -420,7 +453,7 @@ namespace UrRobot.Socket
             val_joint[4] = j5;
             val_joint[5] = j6;
             cmd = mode.jmovej;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
 
         public void goTrack(float j1, float j2, float j3, float j4, float j5, float j6)
@@ -453,7 +486,7 @@ namespace UrRobot.Socket
             val_pos[4] = pos.Ry.rad;
             val_pos[5] = pos.Rz.rad;
             cmd = mode.Rmovep;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
         public void goRelativePosition(Unit x = null, Unit y = null, Unit z = null, Angle Rx = null, Angle Ry = null, Angle Rz = null)
         {
@@ -471,7 +504,7 @@ namespace UrRobot.Socket
             val_pos[4] = Ry.rad;
             val_pos[5] = Rz.rad;
             cmd = mode.Rmovep;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
         public void goRelativeJoint(float j1 = 0, float j2 = 0, float j3 = 0, float j4 = 0, float j5 = 0, float j6 = 0)
         {
@@ -482,7 +515,7 @@ namespace UrRobot.Socket
             val_joint[4] = j5;
             val_joint[5] = j6;
             cmd = mode.Rmovej;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
         public void goRelativeJoint(Angle j1 = null, Angle j2 = null, Angle j3 = null, Angle j4 = null, Angle j5 = null, Angle j6 = null)
         {
@@ -500,11 +533,12 @@ namespace UrRobot.Socket
             val_joint[4] = j5.rad;
             val_joint[5] = j6.rad;
             cmd = mode.Rmovej;
-            while (cmd != mode.stop) ;
+            while (cmd != mode.stop && cmd != mode.End) ;
         }
-        public void goFunction()
+        public void goFunction(string info)
         {
-            dynamicGrip.Invoke();
+            dynamicGrip.Invoke(info);
+            //while (cmd != mode.stop && cmd != mode.End) ;
         }
         public bool goFile(string file = "")
         {
@@ -520,10 +554,17 @@ namespace UrRobot.Socket
                 return false;
             }
 
-
-            string[] fileLine = System.IO.File.ReadAllLines(file);
-            foreach (string line in fileLine)
+            string[] fileLine = File.ReadAllLines(file);
+            for (int i = 0; i < fileLine.Length; i++)
             {
+                string line = fileLine[i];
+                //不理會註解
+                if (line.IndexOf("//") >= 0)
+                    line = line.Substring(0, line.IndexOf("//"));
+
+                if (line.IndexOf("(") <0)
+                    continue;
+
                 string theCmd = line.Substring(0, line.IndexOf("("));
                 if (theCmd == "movej")
                 {
@@ -537,31 +578,44 @@ namespace UrRobot.Socket
                     string[] pos = info.Split(',');
                     goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
                 }
-                else if (theCmd == "Rmovej")
+                else if (theCmd == "movep2")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goPosition2(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                }
+                else if (theCmd == "Rmovej")
+                {
+                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                    string[] joint = info.Split(',');
+                    goRelativeJoint(joint[0].toFloat(), joint[1].toFloat(), joint[2].toFloat(), joint[3].toFloat(), joint[4].toFloat(), joint[5].toFloat());
                 }
                 else if (theCmd == "Rmovep")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goRelativePosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                }
+                else if (theCmd == "servoj")
+                {
+                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                    string[] pos = info.Split(',');
+                    goTrack(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
                 }
                 else if (theCmd == "rq_move")
                 {
                     string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
                     goGripper(info.toInt());
                 }
-                else if (theCmd == "sleep")
+                else if (theCmd == "sleep" || theCmd == "Sleep")
                 {
                     string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
                     Thread.Sleep(info.toInt());
                 }
                 else if (theCmd == "function")
                 {
-                    goFunction();//會等 Function結束才會下一行，所以不用擔心手臂繼續會跑下一行指令
+                    string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
+                    goFunction(info);//會等 Function結束才會下一行，所以不用擔心手臂繼續會跑下一行指令
                 }
                 else if (theCmd == "")
                     continue;
@@ -617,13 +671,14 @@ namespace UrRobot.Socket
         }
         public void Record_grip(int pos, bool withMove = true)
         {
+            if (withMove)
+                goGripper(pos);
+
             if (isRecord == false)
             {
                 Console.WriteLine("Record mode unable");
                 return;
             }
-            if (withMove)
-                goGripper(pos);
             cmd = mode.recordj;
             txt_record.WriteLine($"rq_move({pos})");
         }

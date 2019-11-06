@@ -59,11 +59,33 @@ namespace UrRobot.Coordinates
 
         static public int toInt(this string str)
         {
-            return int.Parse(str);
+            try
+            {
+                return int.Parse(str);
+            }
+            catch
+            {
+                Console.WriteLine("to int fail!");
+                return 0;
+            }
         }
         static public float toFloat(this string str)
         {
-            return float.Parse(str);
+            try
+            {
+                return float.Parse(str);
+            }
+            catch
+            {
+                Console.WriteLine("to float fail!");
+                return 0;
+            }
+        }
+
+        public static bool IsBetween<T>(this T item, T start, T end)
+        {
+            return Comparer<T>.Default.Compare(item, start) >= 0
+                && Comparer<T>.Default.Compare(item, end) <= 0;
         }
     }
     public class Unit
@@ -92,6 +114,25 @@ namespace UrRobot.Coordinates
             get { return _M * 1000.0f; }
             set { _M = value / 1000.0f; }
         }
+
+        public static Unit operator +(Unit p1, Unit p2)
+        {
+            Unit rtn = new Unit();
+            rtn.M = p1.M + p2.M;
+            return rtn;
+        }
+        public static Unit operator -(Unit p1, Unit p2)
+        {
+            Unit rtn = new Unit();
+            rtn.M = p1.M - p2.M;
+            return rtn;
+        }
+        public static Unit operator -(Unit p1)
+        {
+            Unit rtn = new Unit();
+            rtn.M = -p1.M;
+            return rtn;
+        }
     }
     public class Angle
     {
@@ -119,6 +160,24 @@ namespace UrRobot.Coordinates
             set { _rad = value * (float)Math.PI / 180.0f; }
         }
 
+        public static Angle operator +(Angle p1, Angle p2)
+        {
+            Angle rtn = new Angle();
+            rtn.rad = p1.rad + p2.rad;
+            return rtn;
+        }
+        public static Angle operator -(Angle p1, Angle p2)
+        {
+            Angle rtn = new Angle();
+            rtn.rad = p1.rad - p2.rad;
+            return rtn;
+        }
+        public static Angle operator -(Angle p1)
+        {
+            Angle rtn = new Angle();
+            rtn.rad = -p1.rad;
+            return rtn;
+        }
     }
 
 
@@ -161,6 +220,7 @@ namespace UrRobot.Coordinates
                 return true;
         }
 
+
         public URCoordinates()
         {
             X = 0.M();
@@ -172,14 +232,21 @@ namespace UrRobot.Coordinates
             Grip = 0;
         }
 
-        public URCoordinates(Unit _x, Unit _y, Unit _z, Angle _Rx, Angle _Ry, Angle _Rz, byte _G = 0)
+        public URCoordinates(Unit _x, Unit _y, Unit _z, Angle _Rx = null, Angle _Ry = null, Angle _Rz = null, byte _G = 0)
         {
+            if (Rx == null) Rx = new Angle();
+            else Rx = _Rx;
+            if (Ry == null) Ry = new Angle();
+            else Ry = _Ry;
+            if (Rz == null) Rz = new Angle();
+            else Rz = _Rz;
+
             X = _x;
             Y = _y;
             Z = _z;
-            Rx = _Rx;
-            Ry = _Ry;
-            Rz = _Rz;
+
+
+
             Grip = _G;
         }
         /// <summary>
@@ -268,19 +335,133 @@ namespace UrRobot.Coordinates
 
         public static URCoordinates str2urc(string str)
         {
-            str.Substring(str.IndexOf("p["), str.IndexOf("]") - str.IndexOf("p[") - 1);
+            try
+            {
+                str = str.Substring(str.IndexOf("p[") + 2, str.IndexOf("]") - (str.IndexOf("p[") + 2));
 
-            string[] pos = str.Split(',');
-            URCoordinates rtn = new URCoordinates(0, 0, 0, 0, 0, 0, 0);
-            rtn.X.M = pos[0].toFloat();
-            rtn.Y.M = pos[1].toFloat();
-            rtn.Z.M = pos[2].toFloat();
-            rtn.Rx.rad = pos[3].toFloat();
-            rtn.Ry.rad = pos[4].toFloat();
-            rtn.Rz.rad = pos[5].toFloat();
+                string[] pos = str.Split(',');
+                URCoordinates rtn = new URCoordinates(0, 0, 0, 0, 0, 0, 0);
+                rtn.X.M = pos[0].toFloat();
+                rtn.Y.M = pos[1].toFloat();
+                rtn.Z.M = pos[2].toFloat();
+                rtn.Rx.rad = pos[3].toFloat();
+                rtn.Ry.rad = pos[4].toFloat();
+                rtn.Rz.rad = pos[5].toFloat();
+                return rtn;
+            }
+            catch
+            {
+                return new URCoordinates();
+            }
 
-            return rtn;
 
+
+
+        }
+
+
+        public static Vector3 ToRotVector(Vector3 rpy)
+        {
+            float roll = rpy.X;
+            float pitch = rpy.Y;
+            float yaw = rpy.Z;
+            if (roll == 0 && pitch == 0 && yaw == 0)
+                return new Vector3 { X = 0, Y = 0, Z = 0 };
+            Matrix3 RollM = new Matrix3();
+            RollM.M00 = 1; RollM.M01 = 0; RollM.M02 = 0;
+            RollM.M10 = 0; RollM.M11 = Math.Cos(roll); RollM.M12 = -Math.Sin(roll);
+            RollM.M20 = 0; RollM.M21 = Math.Sin(roll); RollM.M22 = Math.Cos(roll);
+
+            Matrix3 PitchM = new Matrix3();
+            PitchM.M00 = Math.Cos(pitch); PitchM.M01 = 0; PitchM.M02 = Math.Sin(pitch);
+            PitchM.M10 = 0; PitchM.M11 = 1; PitchM.M12 = 0;
+            PitchM.M20 = -Math.Sin(pitch); PitchM.M21 = 0; PitchM.M22 = Math.Cos(pitch);
+
+            Matrix3 YawM = new Matrix3();
+            YawM.M00 = Math.Cos(yaw); YawM.M01 = -Math.Sin(yaw); YawM.M02 = 0;
+            YawM.M10 = Math.Sin(yaw); YawM.M11 = Math.Cos(yaw); YawM.M12 = 0;
+            YawM.M20 = 0; YawM.M21 = 0; YawM.M22 = 1;
+
+            Matrix3 Rot = new Matrix3();
+
+            //rot = yaw * pitch * roll
+            Rot = Matrix3.Dot(YawM, Matrix3.Dot(PitchM, RollM));
+
+            double rotSum = Rot.M00 + Rot.M11 + Rot.M22 - 1;
+            double alpha = Math.Acos(rotSum / 2);
+            double theta = 0;
+            if (roll >= 0)
+                theta = alpha;
+            else
+                theta = 2 * Math.PI - alpha;
+            double my = 1d / (2 * Math.Sin(theta));
+
+            double rx = my * (Rot.M21 - Rot.M12) * theta;
+            double ry = my * (Rot.M02 - Rot.M20) * theta;
+            double rz = my * (Rot.M10 - Rot.M01) * theta;
+
+            Vector3 rotationVector = new Vector3();
+            rotationVector.X = (float)rx;
+            rotationVector.Y = (float)ry;
+            rotationVector.Z = (float)rz;
+            return rotationVector;
+        }
+        public class Vector3
+        {
+            public Vector3()
+            {
+                X = 0;
+                Y = 0;
+                Z = 0;
+            }
+            public Vector3(float x, float y, float z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+            public Vector3(Angle x, Angle y, Angle z)
+            {
+                X = x.rad;
+                Y = y.rad;
+                Z = z.rad;
+            }
+            public float X;
+            public float Y;
+            public float Z;
+        }
+        public class Matrix3
+        {
+            public double M00;
+            public double M10;
+            public double M20;
+
+            public double M01;
+            public double M11;
+            public double M21;
+
+            public double M02;
+            public double M12;
+            public double M22;
+
+            public static Matrix3 Dot(Matrix3 m1, Matrix3 m2)
+            {
+                Matrix3 rtn = new Matrix3();
+
+                rtn.M00 = m1.M00 * m2.M00 + m1.M01 * m2.M10 + m1.M02 * m2.M20;
+                rtn.M01 = m1.M00 * m2.M01 + m1.M01 * m2.M11 + m1.M02 * m2.M21;
+                rtn.M02 = m1.M00 * m2.M02 + m1.M01 * m2.M12 + m1.M02 * m2.M22;
+
+                rtn.M10 = m1.M10 * m2.M00 + m1.M11 * m2.M10 + m1.M12 * m2.M20;
+                rtn.M11 = m1.M10 * m2.M01 + m1.M11 * m2.M11 + m1.M12 * m2.M21;
+                rtn.M12 = m1.M10 * m2.M02 + m1.M11 * m2.M12 + m1.M12 * m2.M22;
+
+                rtn.M20 = m1.M20 * m2.M00 + m1.M21 * m2.M10 + m1.M22 * m2.M20;
+                rtn.M21 = m1.M20 * m2.M01 + m1.M21 * m2.M11 + m1.M22 * m2.M21;
+                rtn.M22 = m1.M20 * m2.M02 + m1.M21 * m2.M12 + m1.M22 * m2.M22;
+
+                return rtn;
+            }
         }
     }
 }
