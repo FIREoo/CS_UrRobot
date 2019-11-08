@@ -87,7 +87,7 @@ namespace UrRobot.Socket
                         return;
                     }
             }
-            int connectPort = 30002;
+            int connectPort = 30004;
 
             urTcpClient = new TcpClient();
             try
@@ -114,6 +114,28 @@ namespace UrRobot.Socket
             String str = msg;
             Byte[] myBytes = Encoding.ASCII.GetBytes(str);
             urSocket.Send(myBytes, myBytes.Length, 0);
+        }
+        public string client_readData()
+        {
+
+                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
+                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
+                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
+                try
+                {
+                    int bufferSize = urSocket.ReceiveBufferSize;
+                    byte[] myBufferBytes = new byte[bufferSize];
+                    int L = urSocket.Receive(myBufferBytes);
+                    string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
+                    return msg_read;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Socket read fail :" + ex);
+                    return "";
+                }
+
+
         }
         public void closeClient()
         {
@@ -562,7 +584,7 @@ namespace UrRobot.Socket
                 if (line.IndexOf("//") >= 0)
                     line = line.Substring(0, line.IndexOf("//"));
 
-                if (line.IndexOf("(") <0)
+                if (line.IndexOf("(") < 0)
                     continue;
 
                 string theCmd = line.Substring(0, line.IndexOf("("));

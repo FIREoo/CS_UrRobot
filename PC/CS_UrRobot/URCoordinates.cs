@@ -81,7 +81,25 @@ namespace UrRobot.Coordinates
                 return 0;
             }
         }
-
+        static public bool toBool(this string str)
+        {
+            if (str == "T" || str == "t" || str == "True" || str == "true" || str == "1" || str == "H" || str == "h" || str == "High" || str == "high")
+                return true;
+            else
+                return false;
+        }
+        static public double toDouble(this string str)
+        {
+            try
+            {
+                return double.Parse(str);
+            }
+            catch
+            {
+                Console.WriteLine("to double fail!");
+                return 0;
+            }
+        }
         public static bool IsBetween<T>(this T item, T start, T end)
         {
             return Comparer<T>.Default.Compare(item, start) >= 0
