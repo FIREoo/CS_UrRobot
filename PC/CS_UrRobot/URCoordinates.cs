@@ -323,7 +323,7 @@ namespace UrRobot.Coordinates
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public string ToString(string format = "[]")
+        public string ToString(string format = "[]",string stringFormat = "")
         {
             string rtn = "";
             if (format.IndexOf('p') >= 0)
@@ -334,13 +334,13 @@ namespace UrRobot.Coordinates
                 rtn += "(";
 
             if (format.IndexOf('3') >= 0)
-                rtn += $"{X.M},{Y.M},{Z.M}";
+                rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)},{Z.M.ToString(stringFormat)}";
             else if (format.IndexOf('6') >= 0)
-                rtn += $"{X.M},{Y.M},{Z.M},{Rx.rad},{Ry.rad},{Rz.rad}";
+                rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)},{Z.M.ToString(stringFormat)},{Rx.rad.ToString(stringFormat)},{Ry.rad.ToString(stringFormat)},{Rz.rad.ToString(stringFormat)}";
             else if (format.IndexOf('7') >= 0)
                 rtn += $"{X.M},{Y.M},{Z.M},{Rx.rad},{Ry.rad},{Rz.rad},{Grip}";
             else
-                rtn += $"{X.M},{Y.M},{Z.M},{Rx.rad},{Ry.rad},{Rz.rad}";
+                rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)},{Z.M.ToString(stringFormat)},{Rx.rad.ToString(stringFormat)},{Ry.rad.ToString(stringFormat)},{Rz.rad.ToString(stringFormat)}";
 
             if (format.IndexOf(']') >= 0)
                 rtn += "]";

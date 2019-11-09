@@ -64,6 +64,7 @@ namespace UrRobot.Socket
         bool isConect = false;
         TcpClient urTcpClient;
         System.Net.Sockets.Socket urSocket;
+      public URCoordinates ClientPos = new URCoordinates();
         public void creatClient(string IP)
         {
             if (isConect) { Console.WriteLine("已經連線"); return; }
@@ -87,7 +88,7 @@ namespace UrRobot.Socket
                         return;
                     }
             }
-            int connectPort = 30004;
+            int connectPort = 30002;
 
             urTcpClient = new TcpClient();
             try
@@ -118,24 +119,72 @@ namespace UrRobot.Socket
         public string client_readData()
         {
 
-                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
-                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
-                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
+            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
+            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
+            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
+            try
+            {
+                int bufferSize = urSocket.ReceiveBufferSize;
+                byte[] myBufferBytes = new byte[bufferSize];
+                int L = urSocket.Receive(myBufferBytes);
+                string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
+                return msg_read;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Socket read fail :" + ex);
+                return "";
+            }
+
+
+        }
+        public void client_StartGetRobotInfo()
+        {
+            System.Threading.Tasks.Task.Run(() =>
+            {
                 try
                 {
-                    int bufferSize = urSocket.ReceiveBufferSize;
-                    byte[] myBufferBytes = new byte[bufferSize];
-                    int L = urSocket.Receive(myBufferBytes);
-                    string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
-                    return msg_read;
+                    while (true)
+                    {
+                        int bufferSize = urTcpClient.ReceiveBufferSize;
+                        byte[] myBufferBytes = new byte[bufferSize];
+                        int dataLength = urSocket.Receive(myBufferBytes);
+                        ClientPos = UrDecode(myBufferBytes);
+                    }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Console.WriteLine("Socket read fail :" + ex);
-                    return "";
+                    Console.WriteLine("Client get UR info end!");
                 }
+            });
 
+            URCoordinates UrDecode(byte[] buffer)
+            {
+                URCoordinates rtn = new URCoordinates();
+                int index = 308;
 
+                double value = _getValue(index, 1);
+                rtn.X.M = (float)value;
+                value = _getValue(index, 2);
+                rtn.Y.M = (float)value;
+                value = _getValue(index, 3);
+                rtn.Z.M = (float)value;
+                value = _getValue(index, 4);
+                rtn.Rx.rad = (float)value;
+                value = _getValue(index, 5);
+                rtn.Ry.rad = (float)value;
+                value = _getValue(index, 6);
+                rtn.Rz.rad = (float)value;
+                return rtn;
+
+                double _getValue(int startIndex,int joint)
+                {
+                    byte[] b = new byte[8];
+                    for (int i = 0; i < 8; i++)
+                        b[7 - i] = buffer[(joint-1) * 8 + i + startIndex];
+                    return BitConverter.ToDouble(b, 0);
+                }
+            }
         }
         public void closeClient()
         {
@@ -333,7 +382,7 @@ namespace UrRobot.Socket
                 {
                     if (!_sendMsg("stop")) break;
                     sMsg = _waitRead(); if (sMsg == "End") break;
-                    Console.WriteLine(sMsg); //拿到 postion
+                   // Console.WriteLine(sMsg); //拿到 postion
                     //UrPosGet?.Invoke(sMsg);
                 }
                 else if (cmd == mode.End)//done
