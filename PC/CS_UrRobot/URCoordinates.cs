@@ -250,8 +250,10 @@ namespace UrRobot.Coordinates
             Grip = 0;
         }
 
-        public URCoordinates(Unit _x, Unit _y, Unit _z, Angle _Rx = null, Angle _Ry = null, Angle _Rz = null, byte _G = 0)
+        public URCoordinates(Unit _x, Unit _y, Unit _z = null, Angle _Rx = null, Angle _Ry = null, Angle _Rz = null, byte _G = 0)
         {
+            if (Z == null) Z = new Unit();
+            else Z = _z;
             if (Rx == null) Rx = new Angle();
             else Rx = _Rx;
             if (Ry == null) Ry = new Angle();
@@ -323,7 +325,7 @@ namespace UrRobot.Coordinates
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public string ToString(string format = "[]",string stringFormat = "")
+        public string ToString(string format = "[]", string stringFormat = "")
         {
             string rtn = "";
             if (format.IndexOf('p') >= 0)
@@ -333,7 +335,9 @@ namespace UrRobot.Coordinates
             if (format.IndexOf('(') >= 0)
                 rtn += "(";
 
-            if (format.IndexOf('3') >= 0)
+            if (format.IndexOf('2') >= 0)
+                rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)}";
+            else if (format.IndexOf('3') >= 0)
                 rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)},{Z.M.ToString(stringFormat)}";
             else if (format.IndexOf('6') >= 0)
                 rtn += $"{X.M.ToString(stringFormat)},{Y.M.ToString(stringFormat)},{Z.M.ToString(stringFormat)},{Rx.rad.ToString(stringFormat)},{Ry.rad.ToString(stringFormat)},{Rz.rad.ToString(stringFormat)}";

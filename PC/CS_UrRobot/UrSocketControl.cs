@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -64,30 +65,27 @@ namespace UrRobot.Socket
         bool isConect = false;
         TcpClient urTcpClient;
         System.Net.Sockets.Socket urSocket;
-      public URCoordinates ClientPos = new URCoordinates();
-        public void creatClient(string IP)
+        public URCoordinates ClientPos = new URCoordinates();
+        public bool ClientConnect(string IP)
         {
-            if (isConect) { Console.WriteLine("已經連線"); return; }
+            if (isConect) { Console.WriteLine("已經連線"); return true; }
+            if (urTcpClient != null)
+                if (urTcpClient.Client.Connected)
+                { Console.WriteLine("已經連線"); return true; }
 
-            if (IP == "auto" || IP == "Auto" || IP == "")
+            //check on UR3 wifi
+            List<string> lstIPAddress = new List<string>();
+            IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ipa in IpEntry.AddressList)
+                if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                    lstIPAddress.Add(ipa.ToString());
+            if (!lstIPAddress.Any(L => L .IndexOf("192.168.1.") >= 0))//沒有任何符合
             {
-                List<string> lstIPAddress = new List<string>();
-                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (IPAddress ipa in IpEntry.AddressList)
-                {
-                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
-                        lstIPAddress.Add(ipa.ToString());
-                }
-
-                foreach (string find_ip in lstIPAddress)
-                    if (find_ip.IndexOf("192.168.1.") >= 0)
-                        IP = find_ip;
-                    else
-                    {
-                        Console.WriteLine("沒連到UR網路?");
-                        return;
-                    }
+                Console.WriteLine("沒連到UR網路?");
+                return false;
             }
+
+
             int connectPort = 30002;
 
             urTcpClient = new TcpClient();
@@ -102,21 +100,30 @@ namespace UrRobot.Socket
             {
                 Console.WriteLine
                            ("主機 {0} 通訊埠 {1} 無法連接  !!", IP, connectPort);
-                return;
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool ClientSend(string msg)
+        {
+            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return false; }
+            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
+            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return false; }
+            try
+            {
+                String str = msg;
+                Byte[] myBytes = Encoding.ASCII.GetBytes(str);
+                urSocket.Send(myBytes, myBytes.Length, 0);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
-
-        public void client_SendData(string msg)
-        {
-            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
-            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
-            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
-
-            String str = msg;
-            Byte[] myBytes = Encoding.ASCII.GetBytes(str);
-            urSocket.Send(myBytes, myBytes.Length, 0);
-        }
-        public string client_readData()
+        public string ClientRead()
         {
 
             if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
@@ -135,16 +142,18 @@ namespace UrRobot.Socket
                 Console.WriteLine("Socket read fail :" + ex);
                 return "";
             }
-
-
         }
-        public void client_StartGetRobotInfo()
+        public void Client_RTDE()
         {
+            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
+            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
+            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
+
             System.Threading.Tasks.Task.Run(() =>
             {
                 try
                 {
-                    while (true)
+                    while (isConect)
                     {
                         int bufferSize = urTcpClient.ReceiveBufferSize;
                         byte[] myBufferBytes = new byte[bufferSize];
@@ -177,18 +186,20 @@ namespace UrRobot.Socket
                 rtn.Rz.rad = (float)value;
                 return rtn;
 
-                double _getValue(int startIndex,int joint)
+                double _getValue(int startIndex, int joint)
                 {
                     byte[] b = new byte[8];
                     for (int i = 0; i < 8; i++)
-                        b[7 - i] = buffer[(joint-1) * 8 + i + startIndex];
+                        b[7 - i] = buffer[(joint - 1) * 8 + i + startIndex];
                     return BitConverter.ToDouble(b, 0);
                 }
             }
         }
-        public void closeClient()
+        public void ClientDisconnect()
         {
             urSocket.Close();
+            urTcpClient.Close();
+            isConect = false;
         }
         #endregion ---Client---
 
@@ -382,7 +393,7 @@ namespace UrRobot.Socket
                 {
                     if (!_sendMsg("stop")) break;
                     sMsg = _waitRead(); if (sMsg == "End") break;
-                   // Console.WriteLine(sMsg); //拿到 postion
+                    // Console.WriteLine(sMsg); //拿到 postion
                     //UrPosGet?.Invoke(sMsg);
                 }
                 else if (cmd == mode.End)//done
@@ -457,15 +468,16 @@ namespace UrRobot.Socket
 
         public bool getPosition(ref URCoordinates pos)
         {
-            if (cmd != mode.stop)
+            if (cmd == mode.stop || cmd == mode.pservoj)
             {
-                pos = new URCoordinates();
-                return false;
+                pos = URCoordinates.str2urc(sMsg);
+            return true;
             }
 
-            pos = URCoordinates.str2urc(sMsg);
+                pos = new URCoordinates();
+                return false;
+            
 
-            return true;
 
         }
 
@@ -502,6 +514,7 @@ namespace UrRobot.Socket
             cmd = mode.pmovep;
             while (cmd != mode.stop && cmd != mode.End) ;
         }
+        /// <summary>注意!! 不能給距離現在太近的點</summary>
         public void goPosition2(URCoordinates pos)
         {
             val_pos[0] = pos.X.M;
@@ -546,6 +559,10 @@ namespace UrRobot.Socket
             val_pos[4] = pos.Ry.rad;
             val_pos[5] = pos.Rz.rad;
             cmd = mode.pservoj;
+        }
+        public void stopTrack()
+        {
+            Stop();
         }
 
         public void goRelativePosition(URCoordinates pos)
@@ -667,7 +684,7 @@ namespace UrRobot.Socket
                     string[] pos = info.Split(',');
                     goRelativePosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
                 }
-                else if (theCmd == "servoj")
+                else if (theCmd == "pservoj")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
