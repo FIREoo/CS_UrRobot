@@ -201,13 +201,13 @@ namespace UrRobot.Coordinates
 
     public class URCoordinates
     {
-        public Unit X = new Unit();
-        public Unit Y = new Unit();
-        public Unit Z = new Unit();
-        public Angle Rx = new Angle();
-        public Angle Ry = new Angle();
-        public Angle Rz = new Angle();
-        public byte Grip = 0;
+        public Unit X { get; set; } = new Unit();
+        public Unit Y { get; set; } = new Unit();
+        public Unit Z { get; set; } = new Unit();
+        public Angle Rx { get; set; } = new Angle();
+        public Angle Ry { get; set; } = new Angle();
+        public Angle Rz { get; set; } = new Angle();
+        public byte Grip { get; set; } = 0;
 
         public static bool operator ==(URCoordinates p1, URCoordinates p2)
         {

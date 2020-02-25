@@ -45,7 +45,7 @@ namespace UrRobot.Socket
             //stopClient();
         }
         public mode cmd = mode.stop;
-
+        public string rootPath = "Path\\";
         static bool serverOn = false;
         public bool isServerRunning
         {
@@ -61,149 +61,174 @@ namespace UrRobot.Socket
         public delegate void URmsg(string msg);
         public URmsg UrPosGet;
 
-        #region //---Client---//
-        bool isConect = false;
-        TcpClient urTcpClient;
-        System.Net.Sockets.Socket urSocket;
-        public URCoordinates ClientPos = new URCoordinates();
-        public bool ClientConnect(string IP)
+        public class Client
         {
-            if (isConect) { Console.WriteLine("已經連線"); return true; }
-            if (urTcpClient != null)
-                if (urTcpClient.Client.Connected)
-                { Console.WriteLine("已經連線"); return true; }
-
-            //check on UR3 wifi
-            List<string> lstIPAddress = new List<string>();
-            IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ipa in IpEntry.AddressList)
-                if (ipa.AddressFamily == AddressFamily.InterNetwork)
-                    lstIPAddress.Add(ipa.ToString());
-            if (!lstIPAddress.Any(L => L .IndexOf("192.168.1.") >= 0))//沒有任何符合
+            public string rootPath;
+            public Client()
             {
-                Console.WriteLine("沒連到UR網路?");
-                return false;
+                UrSocketControl ur = new UrSocketControl();
+                rootPath = ur.rootPath;
             }
+            bool isConect = false;
+            TcpClient urTcpClient;
+            System.Net.Sockets.Socket urSocket;
+            public URCoordinates ClientPos = new URCoordinates();
+            public bool ClientConnect(string IP)
+            {
+                if (isConect) { Console.WriteLine("已經連線"); return true; }
+                if (urTcpClient != null)
+                    if (urTcpClient.Client.Connected)
+                    { Console.WriteLine("已經連線"); return true; }
+
+                //check on UR3 wifi
+                List<string> lstIPAddress = new List<string>();
+                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ipa in IpEntry.AddressList)
+                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                        lstIPAddress.Add(ipa.ToString());
+                if (!lstIPAddress.Any(L => L.IndexOf("192.168.1.") >= 0))//沒有任何符合
+                {
+                    Console.WriteLine("沒連到UR網路?");
+                    return false;
+                }
 
 
-            int connectPort = 30002;
+                int connectPort = 30002;
 
-            urTcpClient = new TcpClient();
-            try
-            {
-                urTcpClient.Connect(IP, connectPort);
-                urSocket = urTcpClient.Client;
-                Console.WriteLine("連線成功 !!");
-                isConect = true;
-            }
-            catch
-            {
-                Console.WriteLine
-                           ("主機 {0} 通訊埠 {1} 無法連接  !!", IP, connectPort);
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ClientSend(string msg)
-        {
-            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return false; }
-            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
-            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return false; }
-            try
-            {
-                String str = msg;
-                Byte[] myBytes = Encoding.ASCII.GetBytes(str);
-                urSocket.Send(myBytes, myBytes.Length, 0);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        public string ClientRead()
-        {
-
-            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
-            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
-            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
-            try
-            {
-                int bufferSize = urSocket.ReceiveBufferSize;
-                byte[] myBufferBytes = new byte[bufferSize];
-                int L = urSocket.Receive(myBufferBytes);
-                string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
-                return msg_read;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Socket read fail :" + ex);
-                return "";
-            }
-        }
-        public void Client_RTDE()
-        {
-            if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
-            if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
-            if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
-
-            System.Threading.Tasks.Task.Run(() =>
-            {
+                urTcpClient = new TcpClient();
                 try
                 {
-                    while (isConect)
-                    {
-                        int bufferSize = urTcpClient.ReceiveBufferSize;
-                        byte[] myBufferBytes = new byte[bufferSize];
-                        int dataLength = urSocket.Receive(myBufferBytes);
-                        ClientPos = UrDecode(myBufferBytes);
-                    }
+                    urTcpClient.Connect(IP, connectPort);
+                    urSocket = urTcpClient.Client;
+                    Console.WriteLine("連線成功 !!");
+                    isConect = true;
                 }
                 catch
                 {
-                    Console.WriteLine("Client get UR info end!");
+                    Console.WriteLine
+                               ("主機 {0} 通訊埠 {1} 無法連接  !!", IP, connectPort);
+                    return false;
                 }
-            });
 
-            URCoordinates UrDecode(byte[] buffer)
+                return true;
+            }
+            public bool ClientSend(string msg)
             {
-                URCoordinates rtn = new URCoordinates();
-                int index = 308;
-
-                double value = _getValue(index, 1);
-                rtn.X.M = (float)value;
-                value = _getValue(index, 2);
-                rtn.Y.M = (float)value;
-                value = _getValue(index, 3);
-                rtn.Z.M = (float)value;
-                value = _getValue(index, 4);
-                rtn.Rx.rad = (float)value;
-                value = _getValue(index, 5);
-                rtn.Ry.rad = (float)value;
-                value = _getValue(index, 6);
-                rtn.Rz.rad = (float)value;
-                return rtn;
-
-                double _getValue(int startIndex, int joint)
+                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return false; }
+                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
+                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return false; }
+                try
                 {
-                    byte[] b = new byte[8];
-                    for (int i = 0; i < 8; i++)
-                        b[7 - i] = buffer[(joint - 1) * 8 + i + startIndex];
-                    return BitConverter.ToDouble(b, 0);
+                    String str = msg;
+                    Byte[] myBytes = Encoding.ASCII.GetBytes(str);
+                    urSocket.Send(myBytes, myBytes.Length, 0);
+                    return true;
+                }
+                catch
+                {
+                    return false;
                 }
             }
-        }
-        public void ClientDisconnect()
-        {
-            urSocket.Close();
-            urTcpClient.Close();
-            isConect = false;
-        }
-        #endregion ---Client---
 
-        #region  //---Server---//
+            public bool ClientGoFile(string file)
+            {
+                if (file.IndexOf(rootPath) < 0)
+                    file = rootPath + file;
+                if (file.IndexOf(".path") < 0)
+                    file += ".path";
+                if (!File.Exists(file))
+                {
+                    Console.WriteLine("file doesn't exist!");
+                    return false;
+                }
+                foreach (string str in File.ReadAllLines(file))
+                    if (!ClientSend(str + "\n"))
+                        return false;
+
+                return true;
+            }
+
+            public string ClientRead()
+            {
+
+                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
+                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
+                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
+                try
+                {
+                    int bufferSize = urSocket.ReceiveBufferSize;
+                    byte[] myBufferBytes = new byte[bufferSize];
+                    int L = urSocket.Receive(myBufferBytes);
+                    string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
+                    return msg_read;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Socket read fail :" + ex);
+                    return "";
+                }
+            }
+            public void Client_RTDE()
+            {
+                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
+                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
+                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
+
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        while (isConect)
+                        {
+                            int bufferSize = urTcpClient.ReceiveBufferSize;
+                            byte[] myBufferBytes = new byte[bufferSize];
+                            int dataLength = urSocket.Receive(myBufferBytes);
+                            ClientPos = UrDecode(myBufferBytes);
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Client get UR info end!");
+                    }
+                });
+
+                URCoordinates UrDecode(byte[] buffer)
+                {
+                    URCoordinates rtn = new URCoordinates();
+                    int index = 308;
+
+                    double value = _getValue(index, 1);
+                    rtn.X.M = (float)value;
+                    value = _getValue(index, 2);
+                    rtn.Y.M = (float)value;
+                    value = _getValue(index, 3);
+                    rtn.Z.M = (float)value;
+                    value = _getValue(index, 4);
+                    rtn.Rx.rad = (float)value;
+                    value = _getValue(index, 5);
+                    rtn.Ry.rad = (float)value;
+                    value = _getValue(index, 6);
+                    rtn.Rz.rad = (float)value;
+                    return rtn;
+
+                    double _getValue(int startIndex, int joint)
+                    {
+                        byte[] b = new byte[8];
+                        for (int i = 0; i < 8; i++)
+                            b[7 - i] = buffer[(joint - 1) * 8 + i + startIndex];
+                        return BitConverter.ToDouble(b, 0);
+                    }
+                }
+            }
+            public void ClientDisconnect()
+            {
+                urSocket.Close();
+                urTcpClient.Close();
+                isConect = false;
+            }
+        }
+
+        #region  //---Server---\\
         Thread thread_server;
         string sMsg = "";
 
@@ -459,7 +484,8 @@ namespace UrRobot.Socket
             stateChange?.Invoke(tcpState.Disconnect);
 
         }
-        #endregion //---Server---//
+        #endregion \\---Server---//
+
 
         public void Stop()
         {
@@ -715,7 +741,7 @@ namespace UrRobot.Socket
         }
 
         #region //---Record---//
-        public string rootPath = "Path\\";
+
         string fileFullPath = "";
         bool isRecord = false;
         StreamWriter txt_record;
