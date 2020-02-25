@@ -4,9 +4,10 @@ while True:
 		if (cmdMsg == "stop"):
 			end_freedrive_mode()
 			stopj(2)
+			sync()
 		elif (cmdMsg == "recordj"):
 			freedrive_mode()
-
+			sync()
 		elif (cmdMsg == "pservoj"):
 			pos = p[msgFloat[1],msgFloat[2],msgFloat[3],msgFloat[4],msgFloat[5],msgFloat[6]]
 			jpos = get_inverse_kin(pos)
