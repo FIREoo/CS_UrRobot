@@ -1,0 +1,19 @@
+ Program
+   BeforeStart
+     IP≔"192.168.1.111"
+     PORT≔888
+     open≔socket_open(IP,PORT)
+     Loop open≟ False 
+       open≔socket_open(IP,PORT)
+     pos = get_actual_tcp_pose()
+     jpos = get_actual_joint_positions()
+     msg = "stop" 
+     cmdMsg = "stop" 
+     dynamic =  True 
+     msgFloat = [0,0.0,0.0,0.0,0.0,0.0,0.0]
+     list_rq = [0,0,0,0]
+     Gripper Activate
+   Robot Program
+     Script: socketControl_v2.script
+   Thread_1
+     Script: sub_socket_read.script
