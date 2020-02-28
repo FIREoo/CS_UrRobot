@@ -41,7 +41,7 @@ namespace Wpf_UrControlExample
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)
         {
             UR.goGripper(int.Parse(tb_grip.Text), int.Parse(tb_grip_f.Text), int.Parse(tb_grip_s.Text));
-            UR.goGripper(255,0,200);
+            UR.goGripper(255, 0, 200);
         }
 
         private void Btn_goPos_Click(object sender, RoutedEventArgs e)
@@ -52,7 +52,7 @@ namespace Wpf_UrControlExample
 
         private void Btn_goJoint_Click(object sender, RoutedEventArgs e)
         {
-           UR.goJoint(3.14f,-1.57f,0,-1.57f,0,0);
+            UR.goJoint(3.14f, -1.57f, 0, -1.57f, 0, 0);
         }
 
         private void Btn_recordj_Click(object sender, RoutedEventArgs e)
@@ -70,14 +70,14 @@ namespace Wpf_UrControlExample
         {
             // UR.goTrack(3.14f, -1.57f, 0, -1.57f, 0, 0);
             //.1,.2,.2,0,3.14,0
-           UR.goTrack(new URCoordinates(-0.14.M(), -0.3, 0.1, 3.14, 0, 0));
+            // UR.goTrack(new URCoordinates(-0.14.M(), -0.3, 0.1, 3.14, 0, 0));
             UR.goTrack(-1.5f, -3.0f, 1.1f, -1.2f, -1.7f, 7.8f);
         }
 
         private void Btn_servoj2_Click(object sender, RoutedEventArgs e)
         {
             //UR.goTrack(3.14f, -1.57f, 1.57f, -1.57f, 0, 0);
-           // UR.goTrack(new URCoordinates(0.15, -0.14, 0.1, 3.14, 0, 0));
+            // UR.goTrack(new URCoordinates(0.15, -0.14, 0.1, 3.14, 0, 0));
             UR.goTrack(-1.5f, -3.0f, 2.2f, -2.3f, -1.6f, 7.8f);
         }
 
@@ -103,7 +103,7 @@ namespace Wpf_UrControlExample
 
         private void Btn_Rmovep_Click(object sender, RoutedEventArgs e)
         {
-          UR.goRelativePosition();
+            UR.goRelativePosition();
         }
 
         private void Btn_Rmovej_Click(object sender, RoutedEventArgs e)
