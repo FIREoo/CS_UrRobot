@@ -554,26 +554,26 @@ namespace UrRobot.Socket
         }
 
         float[] val_joint = new float[6];
-        public void goJoint(float j1, float j2, float j3, float j4, float j5, float j6)
+        public void goJoint(URJoint joint)
         {
-            val_joint[0] = j1;
-            val_joint[1] = j2;
-            val_joint[2] = j3;
-            val_joint[3] = j4;
-            val_joint[4] = j5;
-            val_joint[5] = j6;
+            val_joint[0] = joint.J1.rad;
+            val_joint[1] = joint.J2.rad;
+            val_joint[2] = joint.J3.rad;
+            val_joint[3] = joint.J4.rad;
+            val_joint[4] = joint.J5.rad;
+            val_joint[5] = joint.J6.rad;
             cmd = mode.jmovej;
             while (cmd != mode.stop && cmd != mode.End) ;
         }
 
-        public void goTrack(float j1, float j2, float j3, float j4, float j5, float j6)
+        public void goTrack(URJoint joint)
         {
-            val_joint[0] = j1;
-            val_joint[1] = j2;
-            val_joint[2] = j3;
-            val_joint[3] = j4;
-            val_joint[4] = j5;
-            val_joint[5] = j6;
+            val_joint[0] = joint.J1.rad;
+            val_joint[1] = joint.J2.rad;
+            val_joint[2] = joint.J3.rad;
+            val_joint[3] = joint.J4.rad;
+            val_joint[4] = joint.J5.rad;
+            val_joint[5] = joint.J6.rad;
             cmd = mode.jservoj;
         }
         public void goTrack(URCoordinates pos)
@@ -618,17 +618,6 @@ namespace UrRobot.Socket
             val_pos[4] = Ry.rad;
             val_pos[5] = Rz.rad;
             cmd = mode.Rmovep;
-            while (cmd != mode.stop && cmd != mode.End) ;
-        }
-        public void goRelativeJoint(float j1 = 0, float j2 = 0, float j3 = 0, float j4 = 0, float j5 = 0, float j6 = 0)
-        {
-            val_joint[0] = j1;
-            val_joint[1] = j2;
-            val_joint[2] = j3;
-            val_joint[3] = j4;
-            val_joint[4] = j5;
-            val_joint[5] = j6;
-            cmd = mode.Rmovej;
             while (cmd != mode.stop && cmd != mode.End) ;
         }
         public void goRelativeJoint(Angle j1 = null, Angle j2 = null, Angle j3 = null, Angle j4 = null, Angle j5 = null, Angle j6 = null)

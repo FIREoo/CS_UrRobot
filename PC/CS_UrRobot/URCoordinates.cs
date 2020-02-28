@@ -265,8 +265,6 @@ namespace UrRobot.Coordinates
             Y = _y;
             Z = _z;
 
-
-
             Grip = _G;
         }
         /// <summary>
@@ -486,4 +484,66 @@ namespace UrRobot.Coordinates
             }
         }
     }
+
+    public class URJoint
+    {
+        public Angle J1 { get; set; } = new Angle();
+        public Angle J2 { get; set; } = new Angle();
+        public Angle J3 { get; set; } = new Angle();
+        public Angle J4 { get; set; } = new Angle();
+        public Angle J5 { get; set; } = new Angle();
+        public Angle J6 { get; set; } = new Angle();
+
+        public URJoint(Angle j1 = null, Angle j2 = null, Angle j3 = null, Angle j4 = null, Angle j5 = null, Angle j6 = null)
+        {
+            if (j1 == null) j1 = new Angle();
+            if (j2 == null) j2 = new Angle();
+            if (j3 == null) j3 = new Angle();
+            if (j4 == null) j4 = new Angle();
+            if (j5 == null) j5 = new Angle();
+            if (j6 == null) j6 = new Angle();
+
+            J1 = j1;
+            J2 = j2;
+            J3 = j3;
+            J4 = j4;
+            J5 = j5;
+            J6 = j6;
+        }
+
+        public static bool operator ==(URJoint joint1, URJoint joint2)
+        {
+            if (
+                    joint1.J1.rad == joint2.J1.rad &&
+                    joint1.J2.rad == joint2.J2.rad &&
+                    joint1.J3.rad == joint2.J3.rad &&
+                    joint1.J4.rad == joint2.J4.rad &&
+                    joint1.J5.rad == joint2.J5.rad &&
+                     joint1.J6.rad == joint2.J6.rad
+                 )
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(URJoint joint1, URJoint joint2)
+        {
+            if (
+                    joint1.J1.rad == joint2.J1.rad &&
+                    joint1.J2.rad == joint2.J2.rad &&
+                    joint1.J3.rad == joint2.J3.rad &&
+                    joint1.J4.rad == joint2.J4.rad &&
+                    joint1.J5.rad == joint2.J5.rad &&
+                     joint1.J6.rad == joint2.J6.rad
+                 )
+                return false;
+            else
+                return true;
+        }
+
+        public string toString()
+        {
+            return "N/A";
+        }
+    }
+
 }
