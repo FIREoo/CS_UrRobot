@@ -100,6 +100,33 @@ namespace UrRobot.Coordinates
                 return 0;
             }
         }
+        static public Angle toAngleRad(this string str)
+        {
+            try
+            {
+                float f = float.Parse(str);
+                return f.rad();
+            }
+            catch
+            {
+                Console.WriteLine("to float fail!");
+                return new Angle();
+            }
+        }
+        static public Unit toUnitM(this string str)
+        {
+            try
+            {
+                float f = float.Parse(str);
+                return f.M();
+            }
+            catch
+            {
+                Console.WriteLine("to float fail!");
+                return new Unit();
+            }
+        }
+
         public static bool IsBetween<T>(this T item, T start, T end)
         {
             return Comparer<T>.Default.Compare(item, start) >= 0
@@ -267,42 +294,32 @@ namespace UrRobot.Coordinates
 
             Grip = _G;
         }
-        /// <summary>
-        /// Unit meter
-        /// </summary>
-        /// <param name="_x">axis x (unit meter)</param>
-        /// <param name="_y">axis y (unit meter)</param>
-        /// <param name="_z">axis z (unit meter)</param>
-        /// <param name="_Rx">axis Rx (unit meter)</param>
-        /// <param name="_Ry">axis Ry (unit meter)</param>
-        /// <param name="_Rz">axis Rz (unit meter)</param>
-        /// <param name="_G">gripper pos (0~255)</param>
-        public URCoordinates(float _x, float _y, float _z, float _Rx, float _Ry, float _Rz, byte _G = 0, string unit = "M")
-        {
-            if (unit == "M")
-            {
-                X = new Unit(_x);
-                Y = new Unit(_y);
-                Z = new Unit(_z);
-                Rx = new Angle(_Rx);
-                Ry = new Angle(_Ry);
-                Rz = new Angle(_Rz);
-                Grip = _G;
-            }
-        }
-        public URCoordinates(double _x, double _y, double _z, double _Rx, double _Ry, double _Rz, byte _G = 0, string unit = "M")
-        {
-            if (unit == "M")
-            {
-                X = new Unit(_x);
-                Y = new Unit(_y);
-                Z = new Unit(_z);
-                Rx = new Angle(_Rx);
-                Ry = new Angle(_Ry);
-                Rz = new Angle(_Rz);
-                Grip = _G;
-            }
-        }
+        //public URCoordinates(float _x, float _y, float _z, float _Rx, float _Ry, float _Rz, byte _G = 0, string unit = "M")
+        //{
+        //    if (unit == "M")
+        //    {
+        //        X = new Unit(_x);
+        //        Y = new Unit(_y);
+        //        Z = new Unit(_z);
+        //        Rx = new Angle(_Rx);
+        //        Ry = new Angle(_Ry);
+        //        Rz = new Angle(_Rz);
+        //        Grip = _G;
+        //    }
+        //}
+        //public URCoordinates(double _x, double _y, double _z, double _Rx, double _Ry, double _Rz, byte _G = 0, string unit = "M")
+        //{
+        //    if (unit == "M")
+        //    {
+        //        X = new Unit(_x);
+        //        Y = new Unit(_y);
+        //        Z = new Unit(_z);
+        //        Rx = new Angle(_Rx);
+        //        Ry = new Angle(_Ry);
+        //        Rz = new Angle(_Rz);
+        //        Grip = _G;
+        //    }
+        //}
         public URCoordinates(URCoordinates input)
         {
             X = input.X;

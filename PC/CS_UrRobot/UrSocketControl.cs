@@ -497,12 +497,12 @@ namespace UrRobot.Socket
             if (cmd == mode.stop || cmd == mode.pservoj)
             {
                 pos = URCoordinates.str2urc(sMsg);
-            return true;
+                return true;
             }
 
-                pos = new URCoordinates();
-                return false;
-            
+            pos = new URCoordinates();
+            return false;
+
 
 
         }
@@ -673,37 +673,37 @@ namespace UrRobot.Socket
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] joint = info.Split(',');
-                    goJoint(joint[0].toFloat(), joint[1].toFloat(), joint[2].toFloat(), joint[3].toFloat(), joint[4].toFloat(), joint[5].toFloat());
+                    goJoint(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
                 }
                 else if (theCmd == "movep")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goPosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goPosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
                 }
                 else if (theCmd == "movep2")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goPosition2(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goPosition2(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
                 }
                 else if (theCmd == "Rmovej")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] joint = info.Split(',');
-                    goRelativeJoint(joint[0].toFloat(), joint[1].toFloat(), joint[2].toFloat(), joint[3].toFloat(), joint[4].toFloat(), joint[5].toFloat());
+                    goRelativeJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad());
                 }
                 else if (theCmd == "Rmovep")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goRelativePosition(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goRelativePosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
                 }
                 else if (theCmd == "pservoj")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
                     string[] pos = info.Split(',');
-                    goTrack(new URCoordinates(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat(), pos[3].toFloat(), pos[4].toFloat(), pos[5].toFloat()));
+                    goTrack(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
                 }
                 else if (theCmd == "rq_move")
                 {
