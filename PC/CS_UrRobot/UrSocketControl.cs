@@ -729,6 +729,11 @@ namespace UrRobot.Socket
             return true;
         }
 
+        public void forceMode()
+        {
+
+        }
+
         #region //---Record---//
 
         string fileFullPath = "";
