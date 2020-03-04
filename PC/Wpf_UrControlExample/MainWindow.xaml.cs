@@ -46,13 +46,12 @@ namespace Wpf_UrControlExample
 
         private void Btn_goPos_Click(object sender, RoutedEventArgs e)
         {
-            UR.goPosition(new URCoordinates(0.45f, 0.0f, 0.14f, 3.14f, 0, 0));
-            //UR.goPosition(new URCoordinates(0.45.M(), 0.0.M(), 0.14.M(), 3.14f.rad(), 0, 0));
+            UR.goPosition(new URCoordinates(0.45.M(), 0.0.M(), 0.14.M(), 3.14.rad(), 0.rad(), 0.rad()));
         }
 
         private void Btn_goJoint_Click(object sender, RoutedEventArgs e)
         {
-            UR.goJoint(3.14f, -1.57f, 0, -1.57f, 0, 0);
+            UR.goJoint(new URJoint(3.14.rad(), -1.57.rad(), 0.rad(), -1.57.rad(), 0.rad(), 0.rad()));
         }
 
         private void Btn_recordj_Click(object sender, RoutedEventArgs e)
@@ -68,17 +67,12 @@ namespace Wpf_UrControlExample
 
         private void Btn_servoj1_Click(object sender, RoutedEventArgs e)
         {
-            // UR.goTrack(3.14f, -1.57f, 0, -1.57f, 0, 0);
-            //.1,.2,.2,0,3.14,0
-            // UR.goTrack(new URCoordinates(-0.14.M(), -0.3, 0.1, 3.14, 0, 0));
-            UR.goTrack(-1.5f, -3.0f, 1.1f, -1.2f, -1.7f, 7.8f);
+            UR.goTrack(new URJoint( -1.5.rad(), -3.0.rad(), 1.1.rad(), -1.2.rad(), -1.7.rad(), 7.8.rad()));
         }
 
         private void Btn_servoj2_Click(object sender, RoutedEventArgs e)
         {
-            //UR.goTrack(3.14f, -1.57f, 1.57f, -1.57f, 0, 0);
-            // UR.goTrack(new URCoordinates(0.15, -0.14, 0.1, 3.14, 0, 0));
-            UR.goTrack(-1.5f, -3.0f, 2.2f, -2.3f, -1.6f, 7.8f);
+            UR.goTrack(new URJoint(-1.5.rad(), -3.0.rad(), 2.2.rad(), -2.3.rad(), -1.6.rad(), 7.8.rad()));
         }
 
         private void Btn_record_Click(object sender, RoutedEventArgs e)

@@ -377,7 +377,7 @@ namespace UrRobot.Coordinates
                 str = str.Substring(str.IndexOf("p[") + 2, str.IndexOf("]") - (str.IndexOf("p[") + 2));
 
                 string[] pos = str.Split(',');
-                URCoordinates rtn = new URCoordinates(0, 0, 0, 0, 0, 0, 0);
+                URCoordinates rtn = new URCoordinates();
                 rtn.X.M = pos[0].toFloat();
                 rtn.Y.M = pos[1].toFloat();
                 rtn.Z.M = pos[2].toFloat();
