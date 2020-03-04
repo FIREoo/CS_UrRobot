@@ -72,6 +72,7 @@ namespace UrRobot.Socket
             bool isConect = false;
             TcpClient urTcpClient;
             System.Net.Sockets.Socket urSocket;
+            /// <summary>手臂座標(透過client得到) </summary>
             public URCoordinates ClientPos = new URCoordinates();
             public bool ClientConnect(string IP)
             {
@@ -183,7 +184,7 @@ namespace UrRobot.Socket
                             int bufferSize = urTcpClient.ReceiveBufferSize;
                             byte[] myBufferBytes = new byte[bufferSize];
                             int dataLength = urSocket.Receive(myBufferBytes);
-                            ClientPos = UrDecode(myBufferBytes);
+                            ClientPos = UrDecode(308, myBufferBytes);
                         }
                     }
                     catch
@@ -192,10 +193,9 @@ namespace UrRobot.Socket
                     }
                 });
 
-                URCoordinates UrDecode(byte[] buffer)
+                URCoordinates UrDecode(int index, byte[] buffer)
                 {
                     URCoordinates rtn = new URCoordinates();
-                    int index = 308;
 
                     double value = _getValue(index, 1);
                     rtn.X.M = (float)value;
