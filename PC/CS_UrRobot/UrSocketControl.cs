@@ -74,6 +74,8 @@ namespace UrRobot.Socket
             System.Net.Sockets.Socket urSocket;
             /// <summary>手臂座標(透過client得到) </summary>
             public URCoordinates ClientPos = new URCoordinates();
+            /// <summary>手臂力回受(透過client得到) </summary>
+            public URCoordinates ClientForce = new URCoordinates();
             public bool ClientConnect(string IP)
             {
                 if (isConect) { Console.WriteLine("已經連線"); return true; }
@@ -94,7 +96,7 @@ namespace UrRobot.Socket
                 }
 
 
-                int connectPort = 30002;
+                int connectPort = 30003;
 
                 urTcpClient = new TcpClient();
                 try
@@ -184,7 +186,8 @@ namespace UrRobot.Socket
                             int bufferSize = urTcpClient.ReceiveBufferSize;
                             byte[] myBufferBytes = new byte[bufferSize];
                             int dataLength = urSocket.Receive(myBufferBytes);
-                            ClientPos = UrDecode(308, myBufferBytes);
+                            ClientPos = UrDecode(444, myBufferBytes);//30002 是 308
+                            ClientForce = UrDecode(540, myBufferBytes);
                         }
                     }
                     catch
