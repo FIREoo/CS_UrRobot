@@ -18,12 +18,17 @@
         <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="277" Click="Btn_robotStop_Click"/>
         <Button x:Name="btn_servoj1" Content="servoj 1" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj1_Click"/>
         <Button x:Name="btn_servoj2" Content="servoj 2" HorizontalAlignment="Left" Margin="62,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj2_Click"/>
-        <Button x:Name="btn_record" Content="record" HorizontalAlignment="Left" Margin="462,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_record_Click"/>
-        <Button x:Name="btn_write" Content="write" HorizontalAlignment="Left" Margin="547,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_write_Click"/>
-        <Button x:Name="btn_endRecord" Content="end" HorizontalAlignment="Left" Margin="632,136,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_endRecord_Click"/>
-        <Button x:Name="btn_goFile" Content="go file" HorizontalAlignment="Left" Margin="467,224,0,0" VerticalAlignment="Top" Width="245" Height="30" Click="Btn_goFile_Click"/>
+        <Button x:Name="btn_record" Content="record" HorizontalAlignment="Left" Margin="359,9,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_record_Click"/>
+        <Button x:Name="btn_write" Content="write" HorizontalAlignment="Left" Margin="444,9,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_write_Click"/>
+        <Button x:Name="btn_endRecord" Content="end" HorizontalAlignment="Left" Margin="529,9,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_endRecord_Click"/>
+        <Button x:Name="btn_goFile" Content="go file" HorizontalAlignment="Left" Margin="364,97,0,0" VerticalAlignment="Top" Width="245" Height="30" Click="Btn_goFile_Click"/>
         <Button x:Name="btn_Rmovep" Content="Rmovep" HorizontalAlignment="Left" Margin="115,150,0,0" VerticalAlignment="Top" Width="66" Height="47" Click="Btn_Rmovep_Click"/>
         <Button x:Name="btn_Rmovej" Content="Rmovej" HorizontalAlignment="Left" Margin="115,202,0,0" VerticalAlignment="Top" Width="66" Height="47" Click="Btn_Rmovej_Click"/>
+        <Button x:Name="btn_connectClient" Content="connect client" HorizontalAlignment="Left" Margin="364,164,0,0" VerticalAlignment="Top" Width="181" Height="44" Click="Btn_connectClient_Click"/>
+        <Button x:Name="btn_clientPos" Content="client position" HorizontalAlignment="Left" Margin="364,216,0,0" VerticalAlignment="Top" Width="181" Height="51" Click="Btn_clientPos_Click"/>
+        <Label x:Name="lb_clientPos" Content="(0,0,0)" HorizontalAlignment="Left" Margin="550,224,0,0" VerticalAlignment="Top" FontSize="20"/>
+        <Button x:Name="btn_clientForce" Content="client force" HorizontalAlignment="Left" Margin="364,274,0,0" VerticalAlignment="Top" Width="181" Height="46" Click="Btn_clientForce_Click"/>
+        <Label x:Name="lb_clientForce" Content="(0,0,0)" HorizontalAlignment="Left" Margin="550,282,0,0" VerticalAlignment="Top" FontSize="20"/>
 
     </Grid>
 </Window>

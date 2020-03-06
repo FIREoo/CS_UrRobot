@@ -73,9 +73,11 @@ namespace UrRobot.Socket
             TcpClient urTcpClient;
             System.Net.Sockets.Socket urSocket;
             /// <summary>手臂座標(透過client得到) </summary>
-            public URCoordinates ClientPos = new URCoordinates();
+            private URCoordinates ClientPos = new URCoordinates();
             /// <summary>手臂力回受(透過client得到) </summary>
-            public URCoordinates ClientForce = new URCoordinates();
+            private URCoordinates ClientForce = new URCoordinates();
+            /// <summary>手臂力回受(透過client得到) </summary>
+            private URCoordinates[] ClientForceFilter = new URCoordinates[30];
             public bool ClientConnect(string IP)
             {
                 if (isConect) { Console.WriteLine("已經連線"); return true; }
@@ -115,7 +117,7 @@ namespace UrRobot.Socket
 
                 return true;
             }
-            public bool ClientSend(string msg)
+            private bool ClientSend(string msg)
             {
                 if (!isConect) { Console.WriteLine("尚未連線:isConect"); return false; }
                 if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
@@ -181,6 +183,7 @@ namespace UrRobot.Socket
                 {
                     try
                     {
+                        int pivot_force = 0;
                         while (isConect)
                         {
                             int bufferSize = urTcpClient.ReceiveBufferSize;
@@ -188,6 +191,10 @@ namespace UrRobot.Socket
                             int dataLength = urSocket.Receive(myBufferBytes);
                             ClientPos = UrDecode(444, myBufferBytes);//30002 是 308
                             ClientForce = UrDecode(540, myBufferBytes);
+                            //force filter FIFO
+                            ClientForceFilter[pivot_force] = ClientForce;
+                            pivot_force++;
+                            if (pivot_force == ClientForceFilter.Count()) pivot_force = 0;
                         }
                     }
                     catch
@@ -223,6 +230,36 @@ namespace UrRobot.Socket
                     }
                 }
             }
+            public URCoordinates getPosition()
+            {
+                return ClientPos;
+            }
+            public URCoordinates getFilterForce()
+            {
+                URCoordinates rtn = new URCoordinates();
+                for(int i=0;i< ClientForceFilter.Count();i++)
+                {
+                    rtn.X += ClientForceFilter[i].X;
+                    rtn.Y += ClientForceFilter[i].Y;
+                    rtn.Z += ClientForceFilter[i].Z;
+                    rtn.Rx += ClientForceFilter[i].Rx;
+                    rtn.Ry += ClientForceFilter[i].Ry;
+                    rtn.Rz += ClientForceFilter[i].Rz;
+                }
+                rtn.X = (rtn.X.M / ClientForceFilter.Count()).M();
+                rtn.Y = (rtn.Y.M / ClientForceFilter.Count()).M();
+                rtn.Z = (rtn.Z.M / ClientForceFilter.Count()).M();
+                rtn.Rx = (rtn.Rx.rad / ClientForceFilter.Count()).rad();
+                rtn.Ry = (rtn.Ry.rad / ClientForceFilter.Count()).rad();
+                rtn.Rz = (rtn.Ry.rad / ClientForceFilter.Count()).rad();
+
+                return rtn;
+            }
+            public URCoordinates getForce()
+            {
+                return ClientForce;
+            }
+
             public void ClientDisconnect()
             {
                 urSocket.Close();

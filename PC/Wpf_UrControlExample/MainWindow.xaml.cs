@@ -67,7 +67,7 @@ namespace Wpf_UrControlExample
 
         private void Btn_servoj1_Click(object sender, RoutedEventArgs e)
         {
-            UR.goTrack(new URJoint( -1.5.rad(), -3.0.rad(), 1.1.rad(), -1.2.rad(), -1.7.rad(), 7.8.rad()));
+            UR.goTrack(new URJoint(-1.5.rad(), -3.0.rad(), 1.1.rad(), -1.2.rad(), -1.7.rad(), 7.8.rad()));
         }
 
         private void Btn_servoj2_Click(object sender, RoutedEventArgs e)
@@ -103,6 +103,36 @@ namespace Wpf_UrControlExample
         private void Btn_Rmovej_Click(object sender, RoutedEventArgs e)
         {
             UR.goRelativeJoint(j6: 1.rad());
+        }
+        //client
+        UrSocketControl.Client URc = new UrSocketControl.Client();
+        private void Btn_connectClient_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (!URc.ClientConnect("192.168.1.104"))
+                Console.WriteLine("~~~");
+
+            URc.Client_RTDE();
+        }
+
+        private void Btn_clientPos_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                while (true)
+                    this.Dispatcher.Invoke((Action)(() => { lb_clientPos.Content = URc.getPosition().ToString("(3)", "0.00"); }));
+            });
+        }
+
+        private void Btn_clientForce_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    this.Dispatcher.Invoke((Action)(() => { lb_clientForce.Content = URc.getFilterForce().ToString("3","0"); }));
+                }
+            });
         }
     }
 }
