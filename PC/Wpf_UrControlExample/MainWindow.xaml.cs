@@ -17,6 +17,10 @@ using UrRobot.Socket;
 using UrRobot.Coordinates;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows.Forms;
+using System.IO;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Wpf_UrControlExample
 {
@@ -26,9 +30,11 @@ namespace Wpf_UrControlExample
     public partial class MainWindow : Window
     {
         UrSocketControl UR = new UrSocketControl();
+        ObservableCollection<ListViewData> ListViewDataCollection = new ObservableCollection<ListViewData>();
         public MainWindow()
         {
             InitializeComponent();
+            LV_pathData.ItemsSource = ListViewDataCollection;
         }
 
         private void Btn_startServer_Click(object sender, RoutedEventArgs e)
@@ -134,5 +140,75 @@ namespace Wpf_UrControlExample
                 }
             });
         }
+
+        private void Btn_openPathFile_Click(object sender, RoutedEventArgs e)
+        {
+            var fileContent = string.Empty;
+            string filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = System.Environment.CurrentDirectory;
+                openFileDialog.Filter = "path files(*.path)| *.path";
+                //openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                    using (StreamReader reader = new StreamReader(fileStream))
+                    {
+                        fileContent = reader.ReadToEnd();
+                    }
+                }
+            }
+        }
     }
+
+    public class ListViewData : INotifyPropertyChanged
+    {
+        bool _check;
+        string col1;
+
+        public ListViewData(string col1, SolidColorBrush C1)
+        {
+            _check = false;
+            Col1 = col1;
+            Color1 = C1;
+
+        }
+      public bool isChecked
+        {
+            set
+            {
+                _check = value;
+                NotifyPropertyChanged("isChecked");
+            }
+            get { return _check; }
+        }
+        public string Col1
+        {
+            set
+            {
+                col1 = value;
+                NotifyPropertyChanged("Col1");
+            }
+            get { return col1; }
+        }
+
+        public SolidColorBrush Color1 { get; set; } = new SolidColorBrush(Colors.Black);
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); }
+        }
+    }
+
 }
