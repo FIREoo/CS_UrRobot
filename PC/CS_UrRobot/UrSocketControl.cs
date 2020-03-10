@@ -56,7 +56,7 @@ namespace UrRobot.Socket
         public event ServerState stateChange;
 
         public delegate bool ControlFunction(string msg);
-        public ControlFunction dynamicGrip;
+        public ControlFunction dynamicFunction;
 
         public delegate void URmsg(string msg);
         public URmsg UrPosGet;
@@ -680,7 +680,7 @@ namespace UrRobot.Socket
         }
         public void goFunction(string info)
         {
-            dynamicGrip.Invoke(info);
+            dynamicFunction.Invoke(info);
             //while (cmd != mode.stop && cmd != mode.End) ;
         }
         public bool goFile(string file = "")
@@ -857,6 +857,10 @@ namespace UrRobot.Socket
         }
         #endregion //---Record---//
 
+        public class Path
+        {
+
+        }
 
     }
 }
