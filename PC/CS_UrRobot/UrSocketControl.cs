@@ -237,7 +237,7 @@ namespace UrRobot.Socket
             public URCoordinates getFilterForce()
             {
                 URCoordinates rtn = new URCoordinates();
-                for(int i=0;i< ClientForceFilter.Count();i++)
+                for (int i = 0; i < ClientForceFilter.Count(); i++)
                 {
                     rtn.X += ClientForceFilter[i].X;
                     rtn.Y += ClientForceFilter[i].Y;
@@ -304,7 +304,6 @@ namespace UrRobot.Socket
             thread_server = new Thread(() => Server());
             thread_server.Start();
         }
-
         private void Server()
         {
             //creat tcp
@@ -508,8 +507,6 @@ namespace UrRobot.Socket
             }
             #endregion subfunction
         }
-
-
         public void stopServer()
         {
             serverOn = false;
@@ -739,6 +736,12 @@ namespace UrRobot.Socket
                     string[] pos = info.Split(',');
                     goRelativePosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
                 }
+                else if (theCmd == "jservoj")
+                {
+                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                    string[] joint = info.Split(',');
+                    goTrack(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
+                }
                 else if (theCmd == "pservoj")
                 {
                     string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
@@ -857,8 +860,121 @@ namespace UrRobot.Socket
         }
         #endregion //---Record---//
 
-        public class Path
+        public class PathCmd
         {
+            public enum txtCmd
+            {
+                none = 0,
+                movej = 1,
+                movep = 2,
+                movep2 = 3,
+                Rmovej = 4,
+                Rmovep = 5,
+                jservoj = 6,
+                pservoj = 7,
+                sleep = 8,
+                rq_move = 9,
+                function = 10
+            }
+            public txtCmd Cmd { get; } = txtCmd.none;
+            object txtInfo;
+            public PathCmd(string msg)
+            {
+                //去除空格
+                msg.Replace(" ","");
+
+                if (msg.IndexOf("//") == 0)//代表是開頭
+                {
+                    Cmd = txtCmd.none;
+                    txtInfo = msg;
+                }
+                else if (msg.IndexOf("//") > 0)//代表註解在後面
+                    msg = msg.Substring(0, msg.IndexOf("//"));//所以去除註解
+                else//代表沒有註解
+                {
+                    string theCmd = msg.Substring(0, msg.IndexOf("("));
+                    if (theCmd == txtCmd.movej.ToString())
+                    {
+                        Cmd = txtCmd.movej;
+
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        txtInfo = new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad());
+                    }
+                    else if (theCmd == txtCmd.movep.ToString())
+                    {
+                        Cmd = txtCmd.movep;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        txtInfo = new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad());
+                    }
+                    else if (theCmd == txtCmd.movep2.ToString())
+                    {
+                        Cmd = txtCmd.movep2;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        txtInfo = new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad());
+                    }
+                    else if (theCmd == txtCmd.Rmovej.ToString())
+                    {
+                        Cmd = txtCmd.Rmovej;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        txtInfo = new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad());
+                    }
+                    else if (theCmd == txtCmd.Rmovep.ToString())
+                    {
+                        Cmd = txtCmd.Rmovep;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        txtInfo = new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad());
+                    }
+                    else if (theCmd == txtCmd.jservoj.ToString())
+                    {
+                        Cmd = txtCmd.jservoj;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        txtInfo = (new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
+                    }
+                    else if (theCmd == txtCmd.pservoj.ToString())
+                    {
+                        Cmd = txtCmd.pservoj;
+                        string info = msg.Substring(msg.IndexOf("[") + 1, msg.IndexOf("]") - msg.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        txtInfo = (new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
+                    }
+                    else if (theCmd == txtCmd.rq_move.ToString())
+                    {
+                        Cmd = txtCmd.rq_move;
+                        string info = msg.Substring(msg.IndexOf("(") + 1, msg.IndexOf(")") - msg.IndexOf("(") - 1);
+                        txtInfo = info.toInt();
+                    }
+                    else if (theCmd == txtCmd.sleep.ToString() || theCmd == "Sleep")
+                    {
+                        Cmd = txtCmd.sleep;
+                        string info = msg.Substring(msg.IndexOf("(") + 1, msg.IndexOf(")") - msg.IndexOf("(") - 1);
+                        txtInfo = info.toInt();
+                    }
+                    else if (theCmd == txtCmd.function.ToString())
+                    {
+                        Cmd = txtCmd.function;
+                        string info = msg.Substring(msg.IndexOf("(") + 1, msg.IndexOf(")") - msg.IndexOf("(") - 1);
+                        txtInfo = info;
+                    }
+                    else
+                        txtInfo = "N/A";
+                }
+
+
+
+            }
+
+            public object info
+            {
+                get { return txtInfo; }
+            }
+
+
 
         }
 

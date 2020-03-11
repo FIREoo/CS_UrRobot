@@ -136,11 +136,13 @@ namespace Wpf_UrControlExample
             {
                 while (true)
                 {
-                    this.Dispatcher.Invoke((Action)(() => { lb_clientForce.Content = URc.getFilterForce().ToString("3","0"); }));
+                    this.Dispatcher.Invoke((Action)(() => { lb_clientForce.Content = URc.getFilterForce().ToString("3", "0"); }));
                 }
             });
         }
 
+        //file system
+        List<UrSocketControl.PathCmd> pathPack = new List<UrSocketControl.PathCmd>();
         private void Btn_openPathFile_Click(object sender, RoutedEventArgs e)
         {
             var fileContent = string.Empty;
@@ -150,21 +152,16 @@ namespace Wpf_UrControlExample
             {
                 openFileDialog.InitialDirectory = System.Environment.CurrentDirectory;
                 openFileDialog.Filter = "path files(*.path)| *.path";
-                //openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;
 
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    //Get the path of specified file
-                    filePath = openFileDialog.FileName;
-
-                    //Read the contents of the file into a stream
-                    var fileStream = openFileDialog.OpenFile();
-
-                    using (StreamReader reader = new StreamReader(fileStream))
+                    string[] fileLine = File.ReadAllLines(openFileDialog.FileName);
+                    foreach(string line in fileLine)
                     {
-                        fileContent = reader.ReadToEnd();
+                        pathPack.Add(new UrSocketControl.PathCmd(line));
                     }
+
                 }
             }
         }
@@ -182,7 +179,7 @@ namespace Wpf_UrControlExample
             Color1 = C1;
 
         }
-      public bool isChecked
+        public bool isChecked
         {
             set
             {
