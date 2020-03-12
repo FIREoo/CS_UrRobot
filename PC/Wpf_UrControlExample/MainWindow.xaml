@@ -15,7 +15,7 @@
         <Button x:Name="btn_goPos" Content="go position" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="100" Height="47" Click="Btn_goPos_Click"/>
         <Button x:Name="btn_goJoint" Content="go joint" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Width="100" Height="41" Click="Btn_goJoint_Click"/>
         <Button x:Name="btn_recordj" Content="recordj" HorizontalAlignment="Left" Margin="10,248,0,0" VerticalAlignment="Top" Width="75" Height="40" Click="Btn_recordj_Click"/>
-        <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="277" Click="Btn_robotStop_Click"/>
+        <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="301" Click="Btn_robotStop_Click"/>
         <Button x:Name="btn_servoj1" Content="servoj 1" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj1_Click"/>
         <Button x:Name="btn_servoj2" Content="servoj 2" HorizontalAlignment="Left" Margin="62,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj2_Click"/>
         <Button x:Name="btn_record" Content="record" HorizontalAlignment="Left" Margin="359,9,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_record_Click"/>
@@ -72,6 +72,7 @@
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
         </TabControl>
+        <Button x:Name="btn_force" Content="go force" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" Width="75" Height="38" Click="Btn_force_Click"/>
 
     </Grid>
 </Window>

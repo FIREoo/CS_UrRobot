@@ -26,6 +26,7 @@ namespace UrRobot.Socket
         jservoj = 11,
         pservoj = 12,
         pmovej = 13,
+        force = 14,
         moveByFile = 99
     }
     public enum tcpState
@@ -432,6 +433,15 @@ namespace UrRobot.Socket
                 else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
                 {
                 }
+                else if (cmd == mode.force)//
+                {
+                    if (!_sendMsg("force")) break;
+                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    if (!_sendMsg($"[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+
+                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    Console.WriteLine(sMsg);//position
+                }
                 else if (cmd == mode.jog)//未完成
                 {
                 }
@@ -603,6 +613,7 @@ namespace UrRobot.Socket
             while (cmd != mode.stop && cmd != mode.End) ;
         }
 
+        //track
         public void goTrack(URJoint joint)
         {
             val_joint[0] = joint.J1.rad;
@@ -628,6 +639,22 @@ namespace UrRobot.Socket
             Stop();
         }
 
+        //force
+        public void goForceMode(URCoordinates pos)
+        {
+            val_pos[0] = pos.X.M/1000;
+            val_pos[1] = pos.Y.M / 1000;
+            val_pos[2] = pos.Z.M / 1000;
+            val_pos[3] = pos.Rx.rad / 1000;
+            val_pos[4] = pos.Ry.rad / 1000;
+            val_pos[5] = pos.Rz.rad / 1000;
+            cmd = mode.force;
+        }
+        public void stopForce()
+        {
+            Stop();
+        }
+        //relative
         public void goRelativePosition(URCoordinates pos)
         {
             val_pos[0] = pos.X.M;
@@ -675,6 +702,7 @@ namespace UrRobot.Socket
             cmd = mode.Rmovej;
             while (cmd != mode.stop && cmd != mode.End) ;
         }
+        //other
         public void goFunction(string info)
         {
             dynamicFunction.Invoke(info);
@@ -772,10 +800,7 @@ namespace UrRobot.Socket
             return true;
         }
 
-        public void forceMode()
-        {
-
-        }
+        
 
         #region //---Record---//
 
@@ -881,7 +906,7 @@ namespace UrRobot.Socket
             public PathCmd(string msg)
             {
                 //去除空格
-                msg.Replace(" ","");
+                msg.Replace(" ", "");
 
                 if (msg.IndexOf("//") == 0)//代表是開頭
                 {

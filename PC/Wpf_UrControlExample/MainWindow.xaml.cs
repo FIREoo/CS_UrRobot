@@ -41,7 +41,7 @@ namespace Wpf_UrControlExample
         {
 
             UR.stopServer();
-            UR.startServer("auto", 888);
+            UR.startServer("192.168.0.111", 888);
         }
 
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)
@@ -164,6 +164,11 @@ namespace Wpf_UrControlExample
 
                 }
             }
+        }
+
+        private void Btn_force_Click(object sender, RoutedEventArgs e)
+        {
+            UR.goForceMode(new URCoordinates(0.M(),0.M(),10.M(),0.deg(),0.deg(),0.deg()));
         }
     }
 
