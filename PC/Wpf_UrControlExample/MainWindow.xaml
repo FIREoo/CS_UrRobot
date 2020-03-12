@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_UrControlExample"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="965.6">
     <Grid>
         <Button x:Name="btn_startServer" Content="start server" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="100" Height="63" Click="Btn_startServer_Click"/>
         <Button x:Name="btn_gripper" Content="gripper" HorizontalAlignment="Left" Margin="10,97,0,0" VerticalAlignment="Top" Width="100" Height="48" Click="Btn_gripper_Click"/>
@@ -15,7 +15,7 @@
         <Button x:Name="btn_goPos" Content="go position" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top" Width="100" Height="47" Click="Btn_goPos_Click"/>
         <Button x:Name="btn_goJoint" Content="go joint" HorizontalAlignment="Left" Margin="10,202,0,0" VerticalAlignment="Top" Width="100" Height="41" Click="Btn_goJoint_Click"/>
         <Button x:Name="btn_recordj" Content="recordj" HorizontalAlignment="Left" Margin="10,248,0,0" VerticalAlignment="Top" Width="75" Height="40" Click="Btn_recordj_Click"/>
-        <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="277" Click="Btn_robotStop_Click"/>
+        <Button x:Name="btn_robotStop" Content="Stop" HorizontalAlignment="Left" Margin="262,97,0,0" VerticalAlignment="Top" Width="75" Height="301" Click="Btn_robotStop_Click"/>
         <Button x:Name="btn_servoj1" Content="servoj 1" HorizontalAlignment="Left" Margin="10,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj1_Click"/>
         <Button x:Name="btn_servoj2" Content="servoj 2" HorizontalAlignment="Left" Margin="62,307,0,0" VerticalAlignment="Top" Width="47" Height="37" Click="Btn_servoj2_Click"/>
         <Button x:Name="btn_record" Content="record" HorizontalAlignment="Left" Margin="359,9,0,0" VerticalAlignment="Top" Width="80" Height="61" Click="Btn_record_Click"/>
@@ -29,6 +29,50 @@
         <Label x:Name="lb_clientPos" Content="(0,0,0)" HorizontalAlignment="Left" Margin="550,224,0,0" VerticalAlignment="Top" FontSize="20"/>
         <Button x:Name="btn_clientForce" Content="client force" HorizontalAlignment="Left" Margin="364,274,0,0" VerticalAlignment="Top" Width="181" Height="46" Click="Btn_clientForce_Click"/>
         <Label x:Name="lb_clientForce" Content="(0,0,0)" HorizontalAlignment="Left" Margin="550,282,0,0" VerticalAlignment="Top" FontSize="20"/>
+        <TabControl HorizontalAlignment="Left" Height="400" Margin="633,10,0,0" VerticalAlignment="Top" Width="316">
+            <TabItem Header="Path control">
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="btn_openPathFile" Content="Open Path File" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="101" Height="46" Click="Btn_openPathFile_Click"/>
+                    <ListView x:Name="LV_pathData" HorizontalAlignment="Left" Height="239" Margin="10,72,0,0" VerticalAlignment="Top" Width="274">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView>
+
+                                <GridViewColumn  Header="c" Width="30" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="Transparent">
+                                                <CheckBox IsChecked="{Binding isChecked}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn  Header="Col1" Width="80" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="Transparent">
+                                                <TextBlock Text="{Binding Col1}" Foreground="{Binding Color1}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                            </GridView>
+                        </ListView.View>
+
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+        <Button x:Name="btn_force" Content="go force" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" Width="75" Height="38" Click="Btn_force_Click"/>
 
     </Grid>
 </Window>

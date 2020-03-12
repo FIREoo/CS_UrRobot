@@ -17,6 +17,10 @@ using UrRobot.Socket;
 using UrRobot.Coordinates;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows.Forms;
+using System.IO;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Wpf_UrControlExample
 {
@@ -26,16 +30,18 @@ namespace Wpf_UrControlExample
     public partial class MainWindow : Window
     {
         UrSocketControl UR = new UrSocketControl();
+        ObservableCollection<ListViewData> ListViewDataCollection = new ObservableCollection<ListViewData>();
         public MainWindow()
         {
             InitializeComponent();
+            LV_pathData.ItemsSource = ListViewDataCollection;
         }
 
         private void Btn_startServer_Click(object sender, RoutedEventArgs e)
         {
 
             UR.stopServer();
-            UR.startServer("auto", 888);
+            UR.startServer("192.168.0.111", 888);
         }
 
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)
@@ -130,9 +136,81 @@ namespace Wpf_UrControlExample
             {
                 while (true)
                 {
-                    this.Dispatcher.Invoke((Action)(() => { lb_clientForce.Content = URc.getFilterForce().ToString("3","0"); }));
+                    this.Dispatcher.Invoke((Action)(() => { lb_clientForce.Content = URc.getFilterForce().ToString("3", "0"); }));
                 }
             });
         }
+
+        //file system
+        List<UrSocketControl.PathCmd> pathPack = new List<UrSocketControl.PathCmd>();
+        private void Btn_openPathFile_Click(object sender, RoutedEventArgs e)
+        {
+            var fileContent = string.Empty;
+            string filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = System.Environment.CurrentDirectory;
+                openFileDialog.Filter = "path files(*.path)| *.path";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string[] fileLine = File.ReadAllLines(openFileDialog.FileName);
+                    foreach(string line in fileLine)
+                    {
+                        pathPack.Add(new UrSocketControl.PathCmd(line));
+                    }
+
+                }
+            }
+        }
+
+        private void Btn_force_Click(object sender, RoutedEventArgs e)
+        {
+            UR.goForceMode(new URCoordinates(0.M(),0.M(),10.M(),0.deg(),0.deg(),0.deg()));
+        }
     }
+
+    public class ListViewData : INotifyPropertyChanged
+    {
+        bool _check;
+        string col1;
+
+        public ListViewData(string col1, SolidColorBrush C1)
+        {
+            _check = false;
+            Col1 = col1;
+            Color1 = C1;
+
+        }
+        public bool isChecked
+        {
+            set
+            {
+                _check = value;
+                NotifyPropertyChanged("isChecked");
+            }
+            get { return _check; }
+        }
+        public string Col1
+        {
+            set
+            {
+                col1 = value;
+                NotifyPropertyChanged("Col1");
+            }
+            get { return col1; }
+        }
+
+        public SolidColorBrush Color1 { get; set; } = new SolidColorBrush(Colors.Black);
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); }
+        }
+    }
+
 }
