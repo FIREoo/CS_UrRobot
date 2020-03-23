@@ -68,8 +68,18 @@
                     </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="dashboard">
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="btn_DB_play" Content="Play" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_play_Click"/>
+                    <Button x:Name="btn_DB_pause" Content="Pause" HorizontalAlignment="Left" Margin="99,48,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_pause_Click"/>
+                    <Button x:Name="btn_DB_stop" Content="Stop" HorizontalAlignment="Left" Margin="188,48,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_stop_Click"/>
+                    <Button x:Name="btn_DB_powerOn" Content="Power on" HorizontalAlignment="Left" Margin="10,88,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_powerOn_Click" />
+                    <Button x:Name="btn_DB_powerOff" Content="Power off" HorizontalAlignment="Left" Margin="10,128,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_powerOff_Click" />
+                    <Button x:Name="btn_DB_breakRelease" Content="Break release" HorizontalAlignment="Left" Margin="99,88,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_breakRelease_Click" />
+                    <Button x:Name="btn_DB_load" Content="Load" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_load_Click"/>
+                    <Button x:Name="btn_DB_popup" Content="popup" HorizontalAlignment="Left" Margin="10,168,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_popup_Click" />
+                    <Button x:Name="btn_DB_closePopup" Content="close pop" HorizontalAlignment="Left" Margin="99,168,0,0" VerticalAlignment="Top" Width="84" Height="35" Click="Btn_DB_closePopup_Click" />
+                </Grid>
             </TabItem>
         </TabControl>
         <Button x:Name="btn_force" Content="go force" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" Width="75" Height="38" Click="Btn_force_Click"/>

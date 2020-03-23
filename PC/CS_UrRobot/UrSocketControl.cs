@@ -69,65 +69,64 @@ namespace UrRobot.Socket
             {
                 UrSocketControl ur = new UrSocketControl();
                 rootPath = ur.rootPath;
+                for (int i = 0; i < ClientForceFilter.Count(); i++)
+                    ClientForceFilter[i] = new URCoordinates();
             }
             bool isConect = false;
-            TcpClient urTcpClient;
-            System.Net.Sockets.Socket urSocket;
+            TcpClient client_realTime;
+            TcpClient client_dashboard;
+            System.Net.Sockets.Socket urSocket_realTime;
+            System.Net.Sockets.Socket urSocket_dashboard;
             /// <summary>手臂座標(透過client得到) </summary>
             private URCoordinates ClientPos = new URCoordinates();
             /// <summary>手臂力回受(透過client得到) </summary>
             private URCoordinates ClientForce = new URCoordinates();
             /// <summary>手臂力回受(透過client得到) </summary>
             private URCoordinates[] ClientForceFilter = new URCoordinates[30];
+            private string _ip = "";
             public bool ClientConnect(string IP)
             {
                 if (isConect) { Console.WriteLine("已經連線"); return true; }
-                if (urTcpClient != null)
-                    if (urTcpClient.Client.Connected)
-                    { Console.WriteLine("已經連線"); return true; }
+                //if (urTcpClient != null)
+                //    if (urTcpClient.Client.Connected)
+                //    { Console.WriteLine("已經連線"); return true; }
 
-                //check on UR3 wifi
-                List<string> lstIPAddress = new List<string>();
-                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (IPAddress ipa in IpEntry.AddressList)
-                    if (ipa.AddressFamily == AddressFamily.InterNetwork)
-                        lstIPAddress.Add(ipa.ToString());
-                if (!lstIPAddress.Any(L => L.IndexOf("192.168.1.") >= 0))//沒有任何符合
-                {
-                    Console.WriteLine("沒連到UR網路?");
-                    return false;
-                }
+                int Port_realTime = 30003;
+                int Port_RTDE = 30004;
+                int Port_dashboard = 29999;
 
-
-                int connectPort = 30003;
-
-                urTcpClient = new TcpClient();
+                client_realTime = new TcpClient();
+                client_dashboard = new TcpClient();
                 try
                 {
-                    urTcpClient.Connect(IP, connectPort);
-                    urSocket = urTcpClient.Client;
-                    Console.WriteLine("連線成功 !!");
+                    client_realTime.Connect(IP, Port_realTime);
+                    urSocket_realTime = client_realTime.Client;
+                    client_dashboard.Connect(IP, Port_dashboard);
+                    urSocket_dashboard = client_dashboard.Client;
+
+                    Console.WriteLine("Client is connected");
                     isConect = true;
+                    _ip = IP;
                 }
                 catch
                 {
                     Console.WriteLine
-                               ("主機 {0} 通訊埠 {1} 無法連接  !!", IP, connectPort);
+                               ("Error : Connect fail");
                     return false;
                 }
 
                 return true;
             }
-            private bool ClientSend(string msg)
+            private bool ClientSend(string msg, System.Net.Sockets.Socket socket)
             {
                 if (!isConect) { Console.WriteLine("尚未連線:isConect"); return false; }
-                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
-                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return false; }
+                //if (client_realTime == null) { Console.WriteLine("尚未連線:TcpClient"); return false; }
+                //if (urSocket_realTime == null) { Console.WriteLine("尚未連線:Socket"); return false; }
                 try
                 {
                     String str = msg;
                     Byte[] myBytes = Encoding.ASCII.GetBytes(str);
-                    urSocket.Send(myBytes, myBytes.Length, 0);
+                    socket.Send(myBytes, myBytes.Length, 0);
                     return true;
                 }
                 catch
@@ -138,6 +137,7 @@ namespace UrRobot.Socket
 
             public bool ClientGoFile(string file)
             {
+                //這不是goFile只是跑file裡的
                 if (file.IndexOf(rootPath) < 0)
                     file = rootPath + file;
                 if (file.IndexOf(".path") < 0)
@@ -148,23 +148,23 @@ namespace UrRobot.Socket
                     return false;
                 }
                 foreach (string str in File.ReadAllLines(file))
-                    if (!ClientSend(str + "\n"))
+                    if (!ClientSend(str + "\n", urSocket_realTime))
                         return false;
 
                 return true;
             }
 
-            public string ClientRead()
+            private string ClientRead(System.Net.Sockets.Socket socket)
             {
 
                 if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
-                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
-                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
+                //if (client_realTime == null) { Console.WriteLine("尚未連線:TcpClient"); return ""; }
+                //if (urSocket_realTime == null) { Console.WriteLine("尚未連線:Socket"); return ""; }
                 try
                 {
-                    int bufferSize = urSocket.ReceiveBufferSize;
+                    int bufferSize = socket.ReceiveBufferSize;
                     byte[] myBufferBytes = new byte[bufferSize];
-                    int L = urSocket.Receive(myBufferBytes);
+                    int L = socket.Receive(myBufferBytes);
                     string msg_read = Encoding.ASCII.GetString(myBufferBytes, 0, L);
                     return msg_read;
                 }
@@ -177,8 +177,9 @@ namespace UrRobot.Socket
             public void Client_RTDE()
             {
                 if (!isConect) { Console.WriteLine("尚未連線:isConect"); return; }
-                if (urTcpClient == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
-                if (urSocket == null) { Console.WriteLine("尚未連線:Socket"); return; }
+                //if (client_realTime == null) { Console.WriteLine("尚未連線:TcpClient"); return; }
+                //if (urSocket_realTime == null) { Console.WriteLine("尚未連線:Socket"); return; }
+                urSocket_realTime.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 1000);
 
                 System.Threading.Tasks.Task.Run(() =>
                 {
@@ -187,9 +188,9 @@ namespace UrRobot.Socket
                         int pivot_force = 0;
                         while (isConect)
                         {
-                            int bufferSize = urTcpClient.ReceiveBufferSize;
+                            int bufferSize = client_realTime.ReceiveBufferSize;
                             byte[] myBufferBytes = new byte[bufferSize];
-                            int dataLength = urSocket.Receive(myBufferBytes);
+                            int dataLength = urSocket_realTime.Receive(myBufferBytes);
                             ClientPos = UrDecode(444, myBufferBytes);//30002 是 308
                             ClientForce = UrDecode(540, myBufferBytes);
                             //force filter FIFO
@@ -198,9 +199,12 @@ namespace UrRobot.Socket
                             if (pivot_force == ClientForceFilter.Count()) pivot_force = 0;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Console.WriteLine("Client get UR info end!");
+                        Console.WriteLine("Client get UR info end!", ex.Message);
+                        isConect = false;
+                        ClientConnect(_ip);
+                        Client_RTDE();
                     }
                 });
 
@@ -263,9 +267,90 @@ namespace UrRobot.Socket
 
             public void ClientDisconnect()
             {
-                urSocket.Close();
-                urTcpClient.Close();
+                urSocket_realTime.Close();
+                client_realTime.Close();
                 isConect = false;
+            }
+
+          public  enum DashBoardCommand
+            {
+                load = 1,
+                play  = 2,
+                stop = 3,
+                pause = 4,
+                power_on = 5,
+                power_off = 6,
+                brake_release = 7,
+                popup = 8,
+                close_popup = 9
+            }
+
+            public string ClientCmd(DashBoardCommand cmd, string info = "")
+            {
+                if (cmd == DashBoardCommand.load)
+                {
+                    if (!ClientSend($"load Socket_control.urp" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+               else if (cmd == DashBoardCommand.play)
+                {
+                    if (!ClientSend("play" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.pause)
+                {
+                    if (!ClientSend("pause" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if(cmd == DashBoardCommand.stop)
+                {
+                    if (!ClientSend("stop" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.power_on)
+                {
+                    if (!ClientSend("power on" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.power_off)
+                {
+                    if (!ClientSend("power off" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.brake_release)
+                {
+                    if (!ClientSend("brake release" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.popup)
+                {
+                    if (!ClientSend($"popup {info}" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                else if (cmd == DashBoardCommand.close_popup)
+                {
+                    if (!ClientSend("close popup" + "\n", urSocket_dashboard))
+                        return "Error";
+                    string msg = ClientRead(urSocket_dashboard);
+                    return msg;
+                }
+                return "不支援";
             }
         }
 
@@ -642,7 +727,7 @@ namespace UrRobot.Socket
         //force
         public void goForceMode(URCoordinates pos)
         {
-            val_pos[0] = pos.X.M/1000;
+            val_pos[0] = pos.X.M / 1000;
             val_pos[1] = pos.Y.M / 1000;
             val_pos[2] = pos.Z.M / 1000;
             val_pos[3] = pos.Rx.rad / 1000;
@@ -800,7 +885,7 @@ namespace UrRobot.Socket
             return true;
         }
 
-        
+
 
         #region //---Record---//
 
