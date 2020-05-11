@@ -115,8 +115,8 @@ namespace Wpf_UrControlExample
         private void Btn_connectClient_Click(object sender, RoutedEventArgs e)
         {
 
-            if (!URc.ClientConnect("192.168.1.104"))
-                Console.WriteLine("~~~");
+            if (!URc.ClientConnect("192.168.0.200"))
+                Console.WriteLine("Client連線失敗");
 
             URc.Client_RTDE();
         }
@@ -157,7 +157,7 @@ namespace Wpf_UrControlExample
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     string[] fileLine = File.ReadAllLines(openFileDialog.FileName);
-                    foreach(string line in fileLine)
+                    foreach (string line in fileLine)
                     {
                         pathPack.Add(new UrSocketControl.PathCmd(line));
                     }
@@ -168,8 +168,52 @@ namespace Wpf_UrControlExample
 
         private void Btn_force_Click(object sender, RoutedEventArgs e)
         {
-            UR.goForceMode(new URCoordinates(0.M(),0.M(),10.M(),0.deg(),0.deg(),0.deg()));
+            UR.goForceMode(new URCoordinates(0.M(), 0.M(), 10.M(), 0.deg(), 0.deg(), 0.deg()));
         }
+        #region //---dashboard---\\
+        private void Btn_DB_load_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.load, ""));
+        }
+        private void Btn_DB_play_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.play, "");
+        }
+        private void Btn_DB_pause_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.pause, "");
+        }
+        private void Btn_DB_stop_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.stop, "");
+        }
+        private void Btn_DB_powerOn_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.power_on, "");
+        }
+
+        private void Btn_DB_powerOff_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.power_off, "");
+        }
+
+        private void Btn_DB_breakRelease_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.brake_release, "");
+        }
+        private void Btn_DB_popup_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.popup, "pop!");
+        }
+
+        private void Btn_DB_closePopup_Click(object sender, RoutedEventArgs e)
+        {
+            URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.close_popup, "");
+        }
+
+        #endregion \\---dashboard---//
+
+
     }
 
     public class ListViewData : INotifyPropertyChanged
