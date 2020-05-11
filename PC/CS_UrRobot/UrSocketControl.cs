@@ -287,6 +287,7 @@ namespace UrRobot.Socket
 
             public string ClientCmd(DashBoardCommand cmd, string info = "")
             {
+                if (!isConect) { Console.WriteLine("尚未連線:isConect"); return ""; }
                 if (cmd == DashBoardCommand.load)
                 {
                     if (!ClientSend($"load Socket_control.urp" + "\n", urSocket_dashboard))
