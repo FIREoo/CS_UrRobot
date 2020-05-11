@@ -89,4 +89,5 @@ while True:
     end
     dynamic = False
   end
+  sync()
 end
