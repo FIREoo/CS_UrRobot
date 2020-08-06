@@ -890,7 +890,7 @@ namespace UrRobot.Socket
         #region //---Record---//
 
         string fileFullPath = "";
-        bool isRecord = false;
+    public    bool isRecord = false;
         StreamWriter txt_record;
         public void startRecord(string fileName = "record.path")
         {

@@ -178,6 +178,33 @@ namespace UrRobot.Coordinates
             rtn.M = -p1.M;
             return rtn;
         }
+        public static bool operator ==(Unit p1, Unit p2)
+        {
+            bool p1n = false;
+            bool p2n = false;
+            try { float testGet = p1.M; }
+            catch { p1n = true; }
+            try { float testGet = p2.M; }
+            catch {p2n = true; }
+
+            if (p1n == true && p2n == true)
+                return true;
+            else if (p1n == true && p2n != true)
+                return false;
+            else if (p1n != true && p2n == true)
+                return false;
+            else if (p1.M == p2.M)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(Unit p1, Unit p2)
+        {
+            if (p1 == p2)
+                return false;
+            else
+                return true;
+        }
     }
     public class Angle
     {
@@ -279,13 +306,13 @@ namespace UrRobot.Coordinates
 
         public URCoordinates(Unit _x, Unit _y, Unit _z = null, Angle _Rx = null, Angle _Ry = null, Angle _Rz = null, byte _G = 0)
         {
-            if (Z == null) Z = new Unit();
+            if (_z == null) Z = new Unit();
             else Z = _z;
-            if (Rx == null) Rx = new Angle();
+            if (_Rx == null) Rx = new Angle();
             else Rx = _Rx;
-            if (Ry == null) Ry = new Angle();
+            if (_Ry == null) Ry = new Angle();
             else Ry = _Ry;
-            if (Rz == null) Rz = new Angle();
+            if (_Rz == null) Rz = new Angle();
             else Rz = _Rz;
 
             X = _x;
