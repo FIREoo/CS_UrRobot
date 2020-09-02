@@ -250,6 +250,34 @@ namespace UrRobot.Coordinates
             rtn.rad = -p1.rad;
             return rtn;
         }
+
+        public static bool operator ==(Angle p1, Angle p2)
+        {
+            bool p1n = false;
+            bool p2n = false;
+            try { float testGet = p1.rad; }
+            catch { p1n = true; }
+            try { float testGet = p2.rad; }
+            catch { p2n = true; }
+
+            if (p1n == true && p2n == true)
+                return true;
+            else if (p1n == true && p2n != true)
+                return false;
+            else if (p1n != true && p2n == true)
+                return false;
+            else if (p1.rad == p2.rad)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(Angle p1, Angle p2)
+        {
+            if (p1 == p2)
+                return false;
+            else
+                return true;
+        }
     }
 
 

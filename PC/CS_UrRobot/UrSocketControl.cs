@@ -47,7 +47,7 @@ namespace UrRobot.Socket
         }
         public mode cmd = mode.stop;
         public string rootPath = "Path\\";
-        static bool serverOn = false;
+        bool serverOn = false;
         public bool isServerRunning
         {
             get { return serverOn; }
@@ -272,10 +272,10 @@ namespace UrRobot.Socket
                 isConect = false;
             }
 
-          public  enum DashBoardCommand
+            public enum DashBoardCommand
             {
                 load = 1,
-                play  = 2,
+                play = 2,
                 stop = 3,
                 pause = 4,
                 power_on = 5,
@@ -298,7 +298,7 @@ namespace UrRobot.Socket
                     string msg = ClientRead(urSocket_dashboard);
                     return msg;
                 }
-               else if (cmd == DashBoardCommand.play)
+                else if (cmd == DashBoardCommand.play)
                 {
                     if (!ClientSend("play" + "\n", urSocket_dashboard))
                         return "Error";
@@ -312,7 +312,7 @@ namespace UrRobot.Socket
                     string msg = ClientRead(urSocket_dashboard);
                     return msg;
                 }
-                else if(cmd == DashBoardCommand.stop)
+                else if (cmd == DashBoardCommand.stop)
                 {
                     if (!ClientSend("stop" + "\n", urSocket_dashboard))
                         return "Error";
@@ -360,7 +360,12 @@ namespace UrRobot.Socket
 
         #region  //---Server---\\
         Thread thread_server;
-        string sMsg = "";
+      string sMsg = "";
+        public string urMsg
+        {
+            get
+            { return sMsg; }
+        }
 
         TcpListener serverListener;
         System.Net.Sockets.Socket acceptSocket;
@@ -815,6 +820,8 @@ namespace UrRobot.Socket
             for (int i = 0; i < fileLine.Length; i++)
             {
                 string line = fileLine[i];
+                //除去空白
+                line.Replace(" ","");
                 //不理會註解
                 if (line.IndexOf("//") >= 0)
                     line = line.Substring(0, line.IndexOf("//"));
@@ -894,7 +901,7 @@ namespace UrRobot.Socket
         #region //---Record---//
 
         string fileFullPath = "";
-    public    bool isRecord = false;
+        public bool isRecord = false;
         StreamWriter txt_record;
         public void startRecord(string fileName = "record.path")
         {
