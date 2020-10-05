@@ -22,6 +22,15 @@ while True:
     elif (cmdMsg == "jservoj"):
       jpos = [msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
       servoj(jpos)
+    elif (cmdMsg == "jogj"):
+      nowPosj = get_target_joint_positions()
+      jpos = [nowPosj[0] + msgFloat[1], nowPosj[1] + msgFloat[2], nowPosj[2] + msgFloat[3], nowPosj[3] + msgFloat[4], nowPosj[4] + msgFloat[5], nowPosj[5] + msgFloat[6]]
+      servoj(jpos)
+    elif (cmdMsg == "jogp"):
+      nowPos = get_actual_tcp_pose()
+      pos = p[nowPos[0] + msgFloat[1], nowPos[1] + msgFloat[2], nowPos[2] + msgFloat[3], nowPos[3] + msgFloat[4], nowPos[4] + msgFloat[5], nowPos[5] + msgFloat[6]]
+      jpos = get_inverse_kin(pos)
+      servoj(jpos)
     end
   end
 

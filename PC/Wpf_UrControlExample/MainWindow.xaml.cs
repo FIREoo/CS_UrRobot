@@ -42,6 +42,16 @@ namespace Wpf_UrControlExample
 
             UR.stopServer();
             UR.startServer("192.168.0.111", 888);
+
+            Dispatcher.Invoke(() => { rect_serverState.Fill = (DefaultColor.Yellow); });
+
+            UR.stateChange += (state) =>
+            {
+                if (state == tcpState.Connect)
+                    Dispatcher.Invoke(() => { rect_serverState.Fill = (DefaultColor.Green); });
+                else if (state == tcpState.Disconnect)
+                    Dispatcher.Invoke(() => { rect_serverState.Fill = (DefaultColor.Red); });
+            };
         }
 
         private void Btn_gripper_Click(object sender, RoutedEventArgs e)
@@ -168,7 +178,7 @@ namespace Wpf_UrControlExample
 
         private void Btn_force_Click(object sender, RoutedEventArgs e)
         {
-            UR.goForceMode(new URCoordinates(0.M(), 0.M(), 10.M(), 0.deg(), 0.deg(), 0.deg()));
+            UR.goForceMode(new URCoordinates(0.M(), 0.M(), 10.M(), 0.deg(), 0.deg(), 0.deg()), new URCoordinates(0.M(), 0.M(), 1.M(), 0.deg(), 0.deg(), 0.deg()));
         }
         #region //---dashboard---\\
         private void Btn_DB_load_Click(object sender, RoutedEventArgs e)
@@ -211,7 +221,43 @@ namespace Wpf_UrControlExample
             URc.ClientCmd(UrSocketControl.Client.DashBoardCommand.close_popup, "");
         }
 
+
         #endregion \\---dashboard---//
+
+        private void Btn_jog_Click(object sender, RoutedEventArgs e)
+        {
+            UR.goJog(new URJoint(j6: 0.05.rad()));
+        }
+
+        private void Btn_jog_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MouseDevice.LeftButton == MouseButtonState.Pressed)
+            {
+                UR.goJog(new URJoint(tb_jog1.Text.toFloat().rad(), tb_jog2.Text.toFloat().rad(), tb_jog3.Text.toFloat().rad(), tb_jog4.Text.toFloat().rad(), tb_jog5.Text.toFloat().rad(), tb_jog6.Text.toFloat().rad()));
+            }
+            else if (e.MouseDevice.RightButton == MouseButtonState.Pressed)
+            {
+                UR.goJog(new URJoint(-(tb_jog1.Text.toFloat()).rad(), -(tb_jog2.Text.toFloat()).rad(), -(tb_jog3.Text.toFloat()).rad(), -(tb_jog4.Text.toFloat()).rad(), -(tb_jog5.Text.toFloat()).rad(), -(tb_jog6.Text.toFloat()).rad()));
+            }
+            e.Handled = true;
+        }
+        private void Btn_jogp_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MouseDevice.LeftButton == MouseButtonState.Pressed)
+            {
+                UR.goJog(new URCoordinates(tb_jog1.Text.toFloat().mm(), tb_jog2.Text.toFloat().mm(), tb_jog3.Text.toFloat().mm(), tb_jog4.Text.toFloat().rad(), tb_jog5.Text.toFloat().rad(), tb_jog6.Text.toFloat().rad()));
+            }
+            else if (e.MouseDevice.RightButton == MouseButtonState.Pressed)
+            {
+                UR.goJog(new URCoordinates(-(tb_jog1.Text.toFloat()).mm(), -(tb_jog2.Text.toFloat()).mm(), -(tb_jog3.Text.toFloat()).mm(), -(tb_jog4.Text.toFloat()).rad(), -(tb_jog5.Text.toFloat()).rad(), -(tb_jog6.Text.toFloat()).rad()));
+            }
+            e.Handled = true;
+        }
+        private void Btn_jog_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            UR.Stop();
+            e.Handled = true;
+        }
 
 
     }
@@ -255,6 +301,22 @@ namespace Wpf_UrControlExample
             if (PropertyChanged != null)
             { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); }
         }
+    }
+    public static class DefaultColor
+    {
+        public static SolidColorBrush DarkRed = new SolidColorBrush(Color.FromRgb(140, 68, 64));
+        public static SolidColorBrush Red = new SolidColorBrush(Color.FromRgb(174, 83, 80));
+        public static SolidColorBrush LightRed = new SolidColorBrush(Color.FromRgb(197, 129, 126));
+        public static SolidColorBrush DarkGreen = new SolidColorBrush(Color.FromRgb(79, 120, 67));
+        public static SolidColorBrush Green = new SolidColorBrush(Color.FromRgb(105, 159, 89));
+        public static SolidColorBrush LightGreen = new SolidColorBrush(Color.FromRgb(177, 206, 168));
+        public static SolidColorBrush DarkBlue = new SolidColorBrush(Color.FromRgb(59, 78, 169));
+        public static SolidColorBrush Blue = new SolidColorBrush(Color.FromRgb(91, 102, 189));
+        public static SolidColorBrush LightBlue = new SolidColorBrush(Color.FromRgb(153, 161, 211));
+        public static SolidColorBrush DarkYellow = new SolidColorBrush(Color.FromRgb(230, 159, 13));
+        public static SolidColorBrush Yellow = new SolidColorBrush(Color.FromRgb(243, 180, 48));
+        public static SolidColorBrush LightYellow = new SolidColorBrush(Color.FromRgb(248, 205, 116));
+
     }
 
 }

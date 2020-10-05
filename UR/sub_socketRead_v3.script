@@ -23,7 +23,7 @@ while True:
       msgFloat = socket_read_ascii_float(12)
     end
     socket_send_string(get_actual_tcp_pose())
-    elif msg == "pservoc":
+  elif msg == "pservoc":
     cmdMsg = "pservoc"
     dynamic = True
     socket_send_string("UR:" + cmdMsg)
@@ -41,8 +41,26 @@ while True:
       msgFloat = socket_read_ascii_float(12)
     end
     socket_send_string(get_actual_joint_positions())
+  elif msg == "jogj":
+    cmdMsg = "jogj"
+    dynamic = True
+    socket_send_string("UR:" + cmdMsg)
+    msgFloat = socket_read_ascii_float(12)
+    while msgFloat[0] != 12:
+      msgFloat = socket_read_ascii_float(12)
+    end
+    socket_send_string(get_actual_joint_positions())
+  elif msg == "jogp":
+    cmdMsg = "jogp"
+    dynamic = True
+    socket_send_string("UR:" + cmdMsg)
+    msgFloat = socket_read_ascii_float(12)
+    while msgFloat[0] != 12:
+      msgFloat = socket_read_ascii_float(12)
+    end
+    socket_send_string(get_actual_joint_positions())
 
-
+#//dynamic FALSE
   elif msg == "jmovej":
     cmdMsg = "jmovej"
     socket_send_string("UR:" + cmdMsg)

@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ *v3.1 jogj jogp模式完成 
+ * 
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +27,8 @@ namespace UrRobot.Socket
         grip = 6,
         Rmovep = 7,
         Rmovej = 8,
-        jog = 10,
+        jogj = 10,
+        jogp = 16,
         jservoj = 11,
         pservoj = 12,
         pmovej = 13,
@@ -439,19 +445,21 @@ namespace UrRobot.Socket
             cmd = mode.stop;
             while (serverOn && acceptSocket.Connected)
             {
-                if (cmd == mode.pmovep)//done
-                {//V3 遺棄
+                if (sMsg == "End")
+                    cmd = mode.End;
+                if (cmd == mode.pmovep)//v3 done
+                {
                     if (!_sendMsg("pmovep")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
-                }
+                }//v3 done
                 else if (cmd == mode.pmovej)//有些時候會有動作無法直線到那邊 就會卡住 或是 有時會算錯Rx Ry Rz 就可以用這個，但是!! 給太近的點就會錯誤
                 {//V3 遺棄
                     if (!_sendMsg("pmovej")) break;
@@ -464,103 +472,122 @@ namespace UrRobot.Socket
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
-                }
-                else if (cmd == mode.jmovej)//done
+                }//v3 abandoned
+                else if (cmd == mode.jmovej) //v3 done
                 {
                     if (!_sendMsg("jmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
-                }
-                else if (cmd == mode.jservoj)//done
+                }//v3 done
+                else if (cmd == mode.jservoj)//v3 done
                 {
                     if (!_sendMsg("jservoj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead();if (sMsg == "End" || cmd == mode.End) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);//joint
-                }
+                }//v3 done
                 else if (cmd == mode.pservoj)//done
                 {
                     if (!_sendMsg("pservoj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
                     //Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     //Console.WriteLine(sMsg);//position
-                }
+                }//v3 done(with IK bug)
                 else if (cmd == mode.Rmovep)//done
                 {
                     if (!_sendMsg("Rmovep")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
-                }
+                }//v3 done
                 else if (cmd == mode.Rmovej)//done
                 {
                     if (!_sendMsg("Rmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
-                }
+                }//v3 done
                 else if (cmd == mode.recordj)//done
                 {
                     if (!_sendMsg("recordj")) break;
                     sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);//拿到joint
-                }
+                }//v3 done
                 else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
                 {
-                }
+                }//abandoned(IK bug)
                 else if (cmd == mode.force)//
                 {
                     if (!_sendMsg("force")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;//拿到joint
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;//拿到joint
 
                     if (!_sendMsg($"[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},{val_forceVector[0]},{val_forceVector[1]},{val_forceVector[2]},{val_forceVector[3]},{val_forceVector[4]},{val_forceVector[5]}]")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
 
                     if (sMsg != "UR:get value")
                         Console.WriteLine("error!! UR set force fail?");
                     cmd = mode.joint;
-                }
-                else if (cmd == mode.jog)//未完成
+                }//v3 done
+                else if (cmd == mode.jogj)//v3 done
                 {
-                }
+                    if (!_sendMsg("jogj")) break;
+                    sMsg = _waitRead();if (sMsg == "End" || cmd == mode.End) continue;// jog模式不准stop，除非中斷
+                    Console.WriteLine(sMsg);
+
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
+
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
+                    Console.WriteLine(sMsg);//joint
+                }//v3.1 done
+                else if(cmd == mode.jogp)
+                {
+                    if (!_sendMsg("jogp")) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;// jog模式不准stop，除非中斷
+                    Console.WriteLine(sMsg);
+
+                    if (!_sendMsg($"[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
+
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
+                    Console.WriteLine(sMsg);//joint
+                }//v3.1 done
                 else if (cmd == mode.gripper)//done
                 {
                     if (!_sendMsg("gripper")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0,0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);
                     if (sMsg.IndexOf("UR:done") > 0)
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -569,23 +596,23 @@ namespace UrRobot.Socket
                     else if (sMsg.IndexOf("0") > 0)
                         gripperObjectDetect = false;
                     cmd = mode.stop;
-                }
+                }//v3 done
                 else if (cmd == mode.grip)//遺棄
                 {
-                }
+                }//abandoned
                 else if (cmd == mode.stop)//done
                 {
                     if (!_sendMsg("stop")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     // Console.WriteLine(sMsg); //拿到 postion
                     //UrPosGet?.Invoke(sMsg);
-                }
+                }//v3 done
                 else if (cmd == mode.joint)//done
-                {
+                {//get joint BUT DO NOT freedrive
                     if (!_sendMsg("joint")) break;
                     sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     // Console.WriteLine(sMsg); //拿到 joint
-                }
+                }//v3 done
                 else if (cmd == mode.End)//done
                 {
                     break;
@@ -597,7 +624,7 @@ namespace UrRobot.Socket
             stateChange?.Invoke(tcpState.Disconnect);
             Console.WriteLine("server disconnect");
             serverOn = false;
-
+           
             #region subfunction
             string _waitRead()
             {
@@ -734,6 +761,27 @@ namespace UrRobot.Socket
             while (cmd != mode.stop && cmd != mode.End) ;
         }
 
+
+        public void goJog(URJoint joint)
+        {
+            val_joint[0] = joint.J1.rad;
+            val_joint[1] = joint.J2.rad;
+            val_joint[2] = joint.J3.rad;
+            val_joint[3] = joint.J4.rad;
+            val_joint[4] = joint.J5.rad;
+            val_joint[5] = joint.J6.rad;
+            cmd = mode.jogj;
+        }
+        public void goJog(URCoordinates pos)
+        {
+            val_pos[0] = pos.X.M;
+            val_pos[1] = pos.Y.M;
+            val_pos[2] = pos.Z.M;
+            val_pos[3] = pos.Rx.rad;
+            val_pos[4] = pos.Ry.rad;
+            val_pos[5] = pos.Rz.rad;
+            cmd = mode.jogp;
+        }
         //track
         public void goTrack(URJoint joint)
         {
