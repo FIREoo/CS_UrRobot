@@ -27,6 +27,7 @@ namespace UrRobot.Socket
         pservoj = 12,
         pmovej = 13,
         force = 14,
+        joint = 50,
         moveByFile = 99
     }
     public enum tcpState
@@ -360,12 +361,21 @@ namespace UrRobot.Socket
 
         #region  //---Server---\\
         Thread thread_server;
-      string sMsg = "";
+        string sMsg = "";
         public string urMsg
         {
             get
             { return sMsg; }
         }
+        bool gripperObjectDetect = false;
+        public bool urGrip
+        {
+            get
+            {
+                return gripperObjectDetect;
+            }
+        }
+
 
         TcpListener serverListener;
         System.Net.Sockets.Socket acceptSocket;
@@ -430,26 +440,26 @@ namespace UrRobot.Socket
             while (serverOn && acceptSocket.Connected)
             {
                 if (cmd == mode.pmovep)//done
-                {
+                {//V3 遺棄
                     if (!_sendMsg("pmovep")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
                     cmd = mode.stop;
                 }
-                if (cmd == mode.pmovej)//有些時候會有動作無法直線到那邊 就會卡住 或是 有時會算錯Rx Ry Rz 就可以用這個，但是!! 給太近的點就會錯誤
-                {
+                else if (cmd == mode.pmovej)//有些時候會有動作無法直線到那邊 就會卡住 或是 有時會算錯Rx Ry Rz 就可以用這個，但是!! 給太近的點就會錯誤
+                {//V3 遺棄
                     if (!_sendMsg("pmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -458,12 +468,12 @@ namespace UrRobot.Socket
                 else if (cmd == mode.jmovej)//done
                 {
                     if (!_sendMsg("jmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -472,33 +482,33 @@ namespace UrRobot.Socket
                 else if (cmd == mode.jservoj)//done
                 {
                     if (!_sendMsg("jservoj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);//joint
                 }
                 else if (cmd == mode.pservoj)//done
                 {
                     if (!_sendMsg("pservoj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
-                    Console.WriteLine(sMsg);
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    //Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
-                    Console.WriteLine(sMsg);//position
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    //Console.WriteLine(sMsg);//position
                 }
                 else if (cmd == mode.Rmovep)//done
                 {
                     if (!_sendMsg("Rmovep")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
 
-                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+                    if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -507,12 +517,12 @@ namespace UrRobot.Socket
                 else if (cmd == mode.Rmovej)//done
                 {
                     if (!_sendMsg("Rmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]}]")) break;
+                    if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
                     if (sMsg != "UR:done")
                         Console.WriteLine("error!! UR robot didn't finish work?");
@@ -521,7 +531,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.recordj)//done
                 {
                     if (!_sendMsg("recordj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);//拿到joint
                 }
                 else if (cmd == mode.recordp)//遺棄 (因為 position 轉 joint 會出問題，錄製position很常無法執行
@@ -530,11 +540,14 @@ namespace UrRobot.Socket
                 else if (cmd == mode.force)//
                 {
                     if (!_sendMsg("force")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
-                    if (!_sendMsg($"[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]}]")) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;//拿到joint
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
-                    Console.WriteLine(sMsg);//position
+                    if (!_sendMsg($"[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},{val_forceVector[0]},{val_forceVector[1]},{val_forceVector[2]},{val_forceVector[3]},{val_forceVector[4]},{val_forceVector[5]}]")) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+
+                    if (sMsg != "UR:get value")
+                        Console.WriteLine("error!! UR set force fail?");
+                    cmd = mode.joint;
                 }
                 else if (cmd == mode.jog)//未完成
                 {
@@ -542,16 +555,19 @@ namespace UrRobot.Socket
                 else if (cmd == mode.gripper)//done
                 {
                     if (!_sendMsg("gripper")) break;
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
 
-                    if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0]")) break;
+                    if (!_sendMsg($"[{val_grip[0]},{val_grip[1]},{val_grip[2]},0,0,0,0,0,0,0,0,0]")) break;
 
-                    sMsg = _waitRead(); if (sMsg == "End") break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
                     Console.WriteLine(sMsg);
-                    if (sMsg != "UR:done")
+                    if (sMsg.IndexOf("UR:done") > 0)
                         Console.WriteLine("error!! UR robot didn't finish work?");
-
+                    if (sMsg.IndexOf("1") > 0)
+                        gripperObjectDetect = true;
+                    else if (sMsg.IndexOf("0") > 0)
+                        gripperObjectDetect = false;
                     cmd = mode.stop;
                 }
                 else if (cmd == mode.grip)//遺棄
@@ -563,6 +579,12 @@ namespace UrRobot.Socket
                     sMsg = _waitRead(); if (sMsg == "End") break;
                     // Console.WriteLine(sMsg); //拿到 postion
                     //UrPosGet?.Invoke(sMsg);
+                }
+                else if (cmd == mode.joint)//done
+                {
+                    if (!_sendMsg("joint")) break;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) break;
+                    // Console.WriteLine(sMsg); //拿到 joint
                 }
                 else if (cmd == mode.End)//done
                 {
@@ -599,7 +621,7 @@ namespace UrRobot.Socket
                 try
                 {
                     Byte[] myBytes = Encoding.ASCII.GetBytes(str);
-                    acceptSocket.Send(myBytes, myBytes.Length, 0);
+                    acceptSocket.Send(myBytes, myBytes.Length, SocketFlags.None);
                 }
                 catch
                 {
@@ -623,7 +645,7 @@ namespace UrRobot.Socket
                 thread_server.Abort();
 
             stateChange?.Invoke(tcpState.Disconnect);
-
+            End();
         }
         #endregion \\---Server---//
 
@@ -631,6 +653,14 @@ namespace UrRobot.Socket
         public void Stop()
         {
             cmd = mode.stop;
+        }
+        public void End()
+        {
+            cmd = mode.End;
+        }
+        public void recvJoint()
+        {
+            cmd = mode.joint;
         }
 
         public bool getPosition(ref URCoordinates pos)
@@ -643,9 +673,6 @@ namespace UrRobot.Socket
 
             pos = new URCoordinates();
             return false;
-
-
-
         }
 
         float[] val_grip = new float[3];
@@ -734,7 +761,8 @@ namespace UrRobot.Socket
         }
 
         //force
-        public void goForceMode(URCoordinates pos)
+        float[] val_forceVector = new float[6];
+        public void goForceMode(URCoordinates pos, URCoordinates vector)
         {
             val_pos[0] = pos.X.M / 1000;
             val_pos[1] = pos.Y.M / 1000;
@@ -742,7 +770,16 @@ namespace UrRobot.Socket
             val_pos[3] = pos.Rx.rad / 1000;
             val_pos[4] = pos.Ry.rad / 1000;
             val_pos[5] = pos.Rz.rad / 1000;
+
+
+            val_forceVector[0] = vector.X.M > 0 ? 1 : 0;
+            val_forceVector[1] = vector.Y.M > 0 ? 1 : 0;
+            val_forceVector[2] = vector.Z.M > 0 ? 1 : 0;
+            val_forceVector[3] = vector.Rx.rad > 0 ? 1 : 0;
+            val_forceVector[4] = vector.Ry.rad > 0 ? 1 : 0;
+            val_forceVector[5] = vector.Rz.rad > 0 ? 1 : 0;
             cmd = mode.force;
+            while (cmd != mode.joint && cmd != mode.stop && cmd != mode.End) ;
         }
         public void stopForce()
         {
@@ -817,82 +854,91 @@ namespace UrRobot.Socket
             }
 
             string[] fileLine = File.ReadAllLines(file);
-            for (int i = 0; i < fileLine.Length; i++)
+            try
             {
-                string line = fileLine[i];
-                //除去空白
-                line.Replace(" ","");
-                //不理會註解
-                if (line.IndexOf("//") >= 0)
-                    line = line.Substring(0, line.IndexOf("//"));
+                for (int i = 0; i < fileLine.Length; i++)
+                {
+                    string line = fileLine[i];
+                    //除去空白
+                    line.Replace(" ", "");
+                    //不理會註解
+                    if (line.IndexOf("//") >= 0)
+                        line = line.Substring(0, line.IndexOf("//"));
 
-                if (line.IndexOf("(") < 0)
-                    continue;
+                    if (line.IndexOf("(") < 0)
+                        continue;
 
-                string theCmd = line.Substring(0, line.IndexOf("("));
-                if (theCmd == "movej")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] joint = info.Split(',');
-                    goJoint(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
+                    string theCmd = line.Substring(0, line.IndexOf("("));
+                    if (theCmd == "movej")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        goJoint(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
+                    }
+                    else if (theCmd == "movep")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        goPosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
+                    }
+                    else if (theCmd == "movep2")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        goPosition2(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
+                    }
+                    else if (theCmd == "Rmovej")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        goRelativeJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad());
+                    }
+                    else if (theCmd == "Rmovep")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        goRelativePosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
+                    }
+                    else if (theCmd == "jservoj")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] joint = info.Split(',');
+                        goTrack(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
+                    }
+                    else if (theCmd == "pservoj")
+                    {
+                        string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
+                        string[] pos = info.Split(',');
+                        goTrack(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
+                    }
+                    else if (theCmd == "rq_move")
+                    {
+                        string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
+                        goGripper(info.toInt(), force: 50, speed: 128);
+                    }
+                    else if (theCmd == "sleep" || theCmd == "Sleep")
+                    {
+                        string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
+                        Thread.Sleep(info.toInt());
+                    }
+                    else if (theCmd == "function")
+                    {
+                        string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
+                        goFunction(info);//會等 Function結束才會下一行，所以不用擔心手臂繼續會跑下一行指令
+                    }
+                    else if (theCmd == "")
+                        continue;
+                    else
+                        Console.WriteLine($"Error at : {theCmd}");
                 }
-                else if (theCmd == "movep")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] pos = info.Split(',');
-                    goPosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
-                }
-                else if (theCmd == "movep2")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] pos = info.Split(',');
-                    goPosition2(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
-                }
-                else if (theCmd == "Rmovej")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] joint = info.Split(',');
-                    goRelativeJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad());
-                }
-                else if (theCmd == "Rmovep")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] pos = info.Split(',');
-                    goRelativePosition(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
-                }
-                else if (theCmd == "jservoj")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] joint = info.Split(',');
-                    goTrack(new URJoint(joint[0].toAngleRad(), joint[1].toAngleRad(), joint[2].toAngleRad(), joint[3].toAngleRad(), joint[4].toAngleRad(), joint[5].toAngleRad()));
-                }
-                else if (theCmd == "pservoj")
-                {
-                    string info = line.Substring(line.IndexOf("[") + 1, line.IndexOf("]") - line.IndexOf("[") - 1);
-                    string[] pos = info.Split(',');
-                    goTrack(new URCoordinates(pos[0].toUnitM(), pos[1].toUnitM(), pos[2].toUnitM(), pos[3].toAngleRad(), pos[4].toAngleRad(), pos[5].toAngleRad()));
-                }
-                else if (theCmd == "rq_move")
-                {
-                    string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
-                    goGripper(info.toInt());
-                }
-                else if (theCmd == "sleep" || theCmd == "Sleep")
-                {
-                    string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
-                    Thread.Sleep(info.toInt());
-                }
-                else if (theCmd == "function")
-                {
-                    string info = line.Substring(line.IndexOf("(") + 1, line.IndexOf(")") - line.IndexOf("(") - 1);
-                    goFunction(info);//會等 Function結束才會下一行，所以不用擔心手臂繼續會跑下一行指令
-                }
-                else if (theCmd == "")
-                    continue;
-                else
-                    Console.WriteLine($"Error at : {theCmd}");
+            }
+            catch
+            {
+                Console.WriteLine($"Error : path txt error");
+                return false;
             }
 
+            Stop();
             return true;
         }
 
