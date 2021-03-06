@@ -761,7 +761,7 @@ namespace UrRobot.Socket
             while (cmd != mode.stop && cmd != mode.End) ;
         }
 
-
+        //jog
         public void goJog(URJoint joint)
         {
             val_joint[0] = joint.J1.rad;
@@ -782,6 +782,7 @@ namespace UrRobot.Socket
             val_pos[5] = pos.Rz.rad;
             cmd = mode.jogp;
         }
+
         //track
         public void goTrack(URJoint joint)
         {

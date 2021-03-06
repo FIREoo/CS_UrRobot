@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using WpfCustomControl_UrRobot;
 
 namespace Wpf_UrControlExample
 {
@@ -39,7 +40,6 @@ namespace Wpf_UrControlExample
 
         private void Btn_startServer_Click(object sender, RoutedEventArgs e)
         {
-
             UR.stopServer();
             UR.startServer("192.168.0.111", 888);
 
@@ -224,10 +224,7 @@ namespace Wpf_UrControlExample
 
         #endregion \\---dashboard---//
 
-        private void Btn_jog_Click(object sender, RoutedEventArgs e)
-        {
-            UR.goJog(new URJoint(j6: 0.05.rad()));
-        }
+
 
         private void Btn_jog_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
