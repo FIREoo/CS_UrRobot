@@ -71,6 +71,7 @@ namespace UrRobot.Socket
 
         public class Client
         {
+            public event ServerState stateChange;
             public string rootPath;
             public Client()
             {
@@ -91,9 +92,11 @@ namespace UrRobot.Socket
             /// <summary>手臂力回受(透過client得到) </summary>
             private URCoordinates[] ClientForceFilter = new URCoordinates[30];
             private string _ip = "";
+
             public bool ClientConnect(string IP)
             {
                 if (isConect) { Console.WriteLine("已經連線"); return true; }
+                stateChange?.Invoke(tcpState.waitAccept);
                 //if (urTcpClient != null)
                 //    if (urTcpClient.Client.Connected)
                 //    { Console.WriteLine("已經連線"); return true; }
@@ -112,13 +115,14 @@ namespace UrRobot.Socket
                     urSocket_dashboard = client_dashboard.Client;
 
                     Console.WriteLine("Client is connected");
+                    stateChange?.Invoke(tcpState.Connect);
                     isConect = true;
                     _ip = IP;
                 }
                 catch
                 {
-                    Console.WriteLine
-                               ("Error : Connect fail");
+                    Console.WriteLine("Error : Connect fail");
+                    stateChange?.Invoke(tcpState.Disconnect);
                     return false;
                 }
 
@@ -276,6 +280,7 @@ namespace UrRobot.Socket
             {
                 urSocket_realTime.Close();
                 client_realTime.Close();
+                stateChange?.Invoke(tcpState.Disconnect);
                 isConect = false;
             }
 
@@ -476,7 +481,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.jmovej) //v3 done
                 {
                     if (!_sendMsg("jmovej")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
@@ -490,7 +495,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.jservoj)//v3 done
                 {
                     if (!_sendMsg("jservoj")) break;
-                    sMsg = _waitRead();if (sMsg == "End" || cmd == mode.End) continue;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
@@ -501,7 +506,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.pservoj)//done
                 {
                     if (!_sendMsg("pservoj")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
                     //Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
@@ -512,7 +517,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.Rmovep)//done
                 {
                     if (!_sendMsg("Rmovep")) break;
-                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End ) continue;
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;
 
                     if (!_sendMsg($"p[{val_pos[0]},{val_pos[1]},{val_pos[2]},{val_pos[3]},{val_pos[4]},{val_pos[5]},0,0,0,0,0,0]")) break;
 
@@ -560,7 +565,7 @@ namespace UrRobot.Socket
                 else if (cmd == mode.jogj)//v3 done
                 {
                     if (!_sendMsg("jogj")) break;
-                    sMsg = _waitRead();if (sMsg == "End" || cmd == mode.End) continue;// jog模式不准stop，除非中斷
+                    sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;// jog模式不准stop，除非中斷
                     Console.WriteLine(sMsg);
 
                     if (!_sendMsg($"[{val_joint[0]},{val_joint[1]},{val_joint[2]},{val_joint[3]},{val_joint[4]},{val_joint[5]},0,0,0,0,0,0]")) break;
@@ -568,7 +573,7 @@ namespace UrRobot.Socket
                     sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End || cmd == mode.stop) continue;
                     Console.WriteLine(sMsg);//joint
                 }//v3.1 done
-                else if(cmd == mode.jogp)
+                else if (cmd == mode.jogp)
                 {
                     if (!_sendMsg("jogp")) break;
                     sMsg = _waitRead(); if (sMsg == "End" || cmd == mode.End) continue;// jog模式不准stop，除非中斷
@@ -624,7 +629,7 @@ namespace UrRobot.Socket
             stateChange?.Invoke(tcpState.Disconnect);
             Console.WriteLine("server disconnect");
             serverOn = false;
-           
+
             #region subfunction
             string _waitRead()
             {

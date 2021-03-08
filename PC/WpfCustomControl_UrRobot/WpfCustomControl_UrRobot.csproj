@@ -91,5 +91,11 @@
   <ItemGroup>
     <Folder Include="Themes\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CS_UrRobot\CS_UrRobot.csproj">
+      <Project>{e990c276-c9e3-471a-9c57-7dce2c6f0718}</Project>
+      <Name>CS_UrRobot</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

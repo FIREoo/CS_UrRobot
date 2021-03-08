@@ -8,35 +8,36 @@
     <Viewbox>
         <Grid Height="500" Width="350" Background="#4C56A0D3">
             <Button Content="nn" HorizontalAlignment="Left" Margin="257,18,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-            <Button Content="Start Server" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="5,23,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13"/>
+            <Button x:Name="btn_startServer" Content="Start Server" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13" Click="Btn_startServer_Click"/>
             <Button Content="Go To Point" HorizontalAlignment="Left" Margin="265,324,0,0" VerticalAlignment="Top" Width="77" Height="30" Background="#FFE0B0B0"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
+            <TextBox x:Name="tb_urPos_x" HorizontalAlignment="Left" Height="23" Margin="206,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
             <TextBlock HorizontalAlignment="Left" Margin="320,170,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="191,168,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,192,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
+            <TextBox x:Name="tb_urPos_y" HorizontalAlignment="Left" Height="23" Margin="206,192,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
             <TextBlock HorizontalAlignment="Left" Margin="320,196,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="191,194,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,218,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
+            <TextBox x:Name="tb_urPos_z" HorizontalAlignment="Left" Height="23" Margin="206,218,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
             <TextBlock HorizontalAlignment="Left" Margin="320,222,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="191,220,0,0" TextWrapping="Wrap" Text="Z" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,244,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,248,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBox x:Name="tb_urPos_rx" HorizontalAlignment="Left" Height="23" Margin="206,244,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBlock HorizontalAlignment="Left" Margin="320,248,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="187,246,0,0" TextWrapping="Wrap" Text="Rx" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,270,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,274,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBox x:Name="tb_urPos_ry" HorizontalAlignment="Left" Height="23" Margin="206,270,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBlock HorizontalAlignment="Left" Margin="320,274,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="187,272,0,0" TextWrapping="Wrap" Text="Ry" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="206,296,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,300,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBox x:Name="tb_urPos_rz" HorizontalAlignment="Left" Height="23" Margin="206,296,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBlock HorizontalAlignment="Left" Margin="320,300,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
             <TextBlock HorizontalAlignment="Left" Margin="187,298,0,0" TextWrapping="Wrap" Text="Rz" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged"/>
+            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox HorizontalAlignment="Left" Height="23" Margin="265,192,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox HorizontalAlignment="Left" Height="23" Margin="265,218,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox HorizontalAlignment="Left" Height="23" Margin="265,244,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox HorizontalAlignment="Left" Height="23" Margin="265,270,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox HorizontalAlignment="Left" Height="23" Margin="265,296,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <Rectangle Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="9,26,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
-            <Button Content="Connect UR" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="87,23,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13"/>
-            <Rectangle Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="91,26,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
+            <Rectangle x:Name="rect_server" Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="14,12,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
+            <Button x:Name="btn_startClient" Content="Connect UR" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="92,9,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13" Click="Btn_startClient_Click"/>
+            <Rectangle x:Name="rect_client" Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="96,12,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
+            <Button x:Name="btn_getPosition" Content="Get" HorizontalAlignment="Left" Margin="206,140,0,0" VerticalAlignment="Top" Width="54" MouseDown="Btn_getPosition_MouseDown"/>
         </Grid>
 
     </Viewbox>
