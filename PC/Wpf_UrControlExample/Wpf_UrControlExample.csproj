@@ -101,6 +101,10 @@
       <Project>{e990c276-c9e3-471a-9c57-7dce2c6f0718}</Project>
       <Name>CS_UrRobot</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WpfCustomControl_UrRobot\WpfCustomControl_UrRobot.csproj">
+      <Project>{4529db75-7c18-460b-b486-e678e1ff1db5}</Project>
+      <Name>WpfCustomControl_UrRobot</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

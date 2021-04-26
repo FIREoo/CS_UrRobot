@@ -178,6 +178,33 @@ namespace UrRobot.Coordinates
             rtn.M = -p1.M;
             return rtn;
         }
+        public static bool operator ==(Unit p1, Unit p2)
+        {
+            bool p1n = false;
+            bool p2n = false;
+            try { float testGet = p1.M; }
+            catch { p1n = true; }
+            try { float testGet = p2.M; }
+            catch { p2n = true; }
+
+            if (p1n == true && p2n == true)
+                return true;
+            else if (p1n == true && p2n != true)
+                return false;
+            else if (p1n != true && p2n == true)
+                return false;
+            else if (p1.M == p2.M)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(Unit p1, Unit p2)
+        {
+            if (p1 == p2)
+                return false;
+            else
+                return true;
+        }
     }
     public class Angle
     {
@@ -223,6 +250,34 @@ namespace UrRobot.Coordinates
             rtn.rad = -p1.rad;
             return rtn;
         }
+
+        public static bool operator ==(Angle p1, Angle p2)
+        {
+            bool p1n = false;
+            bool p2n = false;
+            try { float testGet = p1.rad; }
+            catch { p1n = true; }
+            try { float testGet = p2.rad; }
+            catch { p2n = true; }
+
+            if (p1n == true && p2n == true)
+                return true;
+            else if (p1n == true && p2n != true)
+                return false;
+            else if (p1n != true && p2n == true)
+                return false;
+            else if (p1.rad == p2.rad)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(Angle p1, Angle p2)
+        {
+            if (p1 == p2)
+                return false;
+            else
+                return true;
+        }
     }
 
 
@@ -238,6 +293,11 @@ namespace UrRobot.Coordinates
 
         public static bool operator ==(URCoordinates p1, URCoordinates p2)
         {
+            if (p1 == null && p2 == null)
+                return true;
+            else if (p1 == null || p2 == null)
+                return false;
+
             if (
                     p1.X.M == p2.X.M &&
                     p1.Y.M == p2.Y.M &&
@@ -252,6 +312,11 @@ namespace UrRobot.Coordinates
         }
         public static bool operator !=(URCoordinates p1, URCoordinates p2)
         {
+            if (p1 == null && p2 == null)
+                return false;
+            else if (p1 == null || p2 == null)
+                return true;
+
             if (
                     p1.X.M == p2.X.M &&
                     p1.Y.M == p2.Y.M &&
@@ -279,13 +344,13 @@ namespace UrRobot.Coordinates
 
         public URCoordinates(Unit _x, Unit _y, Unit _z = null, Angle _Rx = null, Angle _Ry = null, Angle _Rz = null, byte _G = 0)
         {
-            if (Z == null) Z = new Unit();
+            if (_z == null) Z = new Unit();
             else Z = _z;
-            if (Rx == null) Rx = new Angle();
+            if (_Rx == null) Rx = new Angle();
             else Rx = _Rx;
-            if (Ry == null) Ry = new Angle();
+            if (_Ry == null) Ry = new Angle();
             else Ry = _Ry;
-            if (Rz == null) Rz = new Angle();
+            if (_Rz == null) Rz = new Angle();
             else Rz = _Rz;
 
             X = _x;
@@ -340,7 +405,7 @@ namespace UrRobot.Coordinates
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public string ToString(string format = "[]", string stringFormat = "")
+        public string ToString(string format = "p[]", string stringFormat = "")
         {
             string rtn = "";
             if (format.IndexOf('p') >= 0)
@@ -374,6 +439,9 @@ namespace UrRobot.Coordinates
         {
             try
             {
+                if (str.IndexOf("p") == -1)//是URJoint的
+                    return null;
+
                 str = str.Substring(str.IndexOf("p[") + 2, str.IndexOf("]") - (str.IndexOf("p[") + 2));
 
                 string[] pos = str.Split(',');
@@ -388,11 +456,8 @@ namespace UrRobot.Coordinates
             }
             catch
             {
-                return new URCoordinates();
+                return null;
             }
-
-
-
 
         }
 
@@ -511,6 +576,16 @@ namespace UrRobot.Coordinates
         public Angle J5 { get; set; } = new Angle();
         public Angle J6 { get; set; } = new Angle();
 
+        public URJoint()
+        {
+            J1 = new Angle(); 
+            J2 = new Angle();
+            J3 = new Angle();
+            J4 = new Angle();
+            J5 = new Angle();
+            J6 = new Angle();
+        }
+
         public URJoint(Angle j1 = null, Angle j2 = null, Angle j3 = null, Angle j4 = null, Angle j5 = null, Angle j6 = null)
         {
             if (j1 == null) j1 = new Angle();
@@ -557,9 +632,55 @@ namespace UrRobot.Coordinates
                 return true;
         }
 
-        public string toString()
+        public string ToString(string format = "[]", string stringFormat = "")
         {
-            return "N/A";
+            string rtn = "";
+            if (format.IndexOf('j') >= 0)
+                rtn += "j";
+            if (format.IndexOf('[') >= 0)
+                rtn += "[";
+            if (format.IndexOf('(') >= 0)
+                rtn += "(";
+
+                rtn += $"{J1.rad.ToString(stringFormat)},{J2.rad.ToString(stringFormat)},{J3.rad.ToString(stringFormat)},{J4.rad.ToString(stringFormat)},{J5.rad.ToString(stringFormat)},{J6.rad.ToString(stringFormat)}";
+
+            if (format.IndexOf(']') >= 0)
+                rtn += "]";
+            if (format.IndexOf(')') >= 0)
+                rtn += ")";
+
+            return rtn;
+        }
+        public static URJoint str2joint(string str)
+        {
+            try
+            {
+                if (str.IndexOf("p") != -1)//是URCoodinates的
+                    return null;
+
+                if (str.IndexOf("[") != -1)
+                    str = str.Substring(str.IndexOf("[") + 1, str.IndexOf("]") - (str.IndexOf("[") + 1));
+                else if (str.IndexOf("(") != -1)
+                    str = str.Substring(str.IndexOf("(") + 1, str.IndexOf(")") - (str.IndexOf("(") + 1));
+
+                string[] pos = str.Split(',');
+                URJoint rtn = new URJoint();
+                rtn.J1.rad = pos[0].toFloat();
+                rtn.J2.rad = pos[1].toFloat();
+                rtn.J3.rad = pos[2].toFloat();
+                rtn.J4.rad = pos[3].toFloat();
+                rtn.J5.rad = pos[4].toFloat();
+                rtn.J6.rad = pos[5].toFloat();
+                return rtn;
+            }
+            catch
+            {
+                return null;
+            }
+
+
+
+
         }
     }
 

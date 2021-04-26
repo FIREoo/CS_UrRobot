@@ -1,0 +1,88 @@
+while True:
+
+  if (dynamic == True):
+    if (cmdMsg == "stop"):
+      end_freedrive_mode()
+      end_force_mode()
+      stopj(2)
+      sync()
+    elif (cmdMsg == "joint"):
+      sync()
+    elif (cmdMsg == "recordj"):
+      freedrive_mode()
+      sync()
+    elif (cmdMsg == "pservoj"):
+      pos = p[msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
+      jpos = get_inverse_kin(pos)
+      servoj(jpos)
+    elif (cmdMsg == "pservoc"):
+      pos = p[msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
+      servoc(pos)
+
+    elif (cmdMsg == "jservoj"):
+      jpos = [msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
+      servoj(jpos)
+    elif (cmdMsg == "jogj"):
+      nowPosj = get_target_joint_positions()
+      jpos = [nowPosj[0] + msgFloat[1], nowPosj[1] + msgFloat[2], nowPosj[2] + msgFloat[3], nowPosj[3] + msgFloat[4], nowPosj[4] + msgFloat[5], nowPosj[5] + msgFloat[6]]
+      servoj(jpos)
+    elif (cmdMsg == "jogp"):
+      nowPos = get_actual_tcp_pose()
+      pos = p[nowPos[0] + msgFloat[1], nowPos[1] + msgFloat[2], nowPos[2] + msgFloat[3], nowPos[3] + msgFloat[4], nowPos[4] + msgFloat[5], nowPos[5] + msgFloat[6]]
+      jpos = get_inverse_kin(pos)
+      servoj(jpos)
+    end
+  end
+
+  if (dynamic == False):
+    if (cmdMsg == "jmovej"):
+      jpos = [msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
+      movej(jpos)
+      socket_send_string("UR:done")
+    elif (cmdMsg == "pmovep"):
+      pos = p[msgFloat[1], msgFloat[2], msgFloat[3], msgFloat[4], msgFloat[5], msgFloat[6]]
+      movep(pos)
+      socket_send_string("UR:done")
+    elif (cmdMsg == "Rmovej"):
+      nowPosj = get_target_joint_positions()
+      jpos = [nowPosj[0] + msgFloat[1], nowPosj[1] + msgFloat[2], nowPosj[2] + msgFloat[3], nowPosj[3] + msgFloat[4], nowPosj[4] + msgFloat[5], nowPosj[5] + msgFloat[6]]
+      movej(jpos)
+      socket_send_string("UR:done")
+    elif (cmdMsg == "Rmovep"):
+      nowPos = get_actual_tcp_pose()
+      pos = p[nowPos[0] + msgFloat[1], nowPos[1] + msgFloat[2], nowPos[2] + msgFloat[3], nowPos[3] + msgFloat[4], nowPos[4] + msgFloat[5], nowPos[5] + msgFloat[6]]
+      movep(pos)
+      socket_send_string("UR:done")
+    elif (cmdMsg == "gripper"):
+      list_rq[0] = msgFloat[1] * 1000
+      list_rq[1] = msgFloat[2] * 1000
+      list_rq[2] = msgFloat[3] * 1000
+      rq_set_force(list_rq[1])
+      rq_set_speed(list_rq[2])
+      rq_move(list_rq[0])
+      while (rq_is_motion_complete() == False):
+      end
+      if (rq_is_object_detected() == True):
+        socket_send_string("UR:done-1")
+      elif  (rq_is_object_detected() == False):
+        socket_send_string("UR:done-0")
+      end
+      
+    elif (cmdMsg == "force"):
+      wrench = [msgFloat[1]*1000, msgFloat[2]*1000, msgFloat[3]*1000, msgFloat[4]*1000, msgFloat[5]*1000, msgFloat[6]*1000]
+      vector = [msgFloat[7],msgFloat[8],msgFloat[9],msgFloat[10],msgFloat[11],msgFloat[12]]
+      vector = [0,0,0,0,0,0]
+      i = 0
+      while i < 6:
+        if (msgFloat[i+7] != 0):
+          vector[i] = 1
+        end
+        i = i + 1
+      end
+      force_mode(p[0,0,0,0,0,0],vector,wrench,2,[0.1,0.1,0.1,0.17,0.17,0.17])
+      socket_send_string("UR:get value")
+      #dynamic false but will not stop
+    end
+    dynamic = True
+  end
+end

@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_UrControlExample"
+        xmlns:control ="clr-namespace:WpfCustomControl_UrRobot;assembly=WpfCustomControl_UrRobot"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="965.6">
+        Title="MainWindow" Height="584" Width="1383.1">
     <Grid>
-        <Button x:Name="btn_startServer" Content="start server" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="100" Height="63" Click="Btn_startServer_Click"/>
+        <Button x:Name="btn_startServer" Content="start server" HorizontalAlignment="Left" Margin="10,24,0,0" VerticalAlignment="Top" Width="110" Height="36" Click="Btn_startServer_Click"/>
         <Button x:Name="btn_gripper" Content="gripper" HorizontalAlignment="Left" Margin="10,97,0,0" VerticalAlignment="Top" Width="100" Height="48" Click="Btn_gripper_Click"/>
         <TextBox x:Name="tb_grip" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="48" Margin="115,97,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
         <TextBox x:Name="tb_grip_f" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="48" Margin="164,97,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
@@ -83,6 +84,17 @@
             </TabItem>
         </TabControl>
         <Button x:Name="btn_force" Content="go force" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" Width="75" Height="38" Click="Btn_force_Click"/>
+        <Button x:Name="btn_jog" Content="jog Joint(rad)" HorizontalAlignment="Left" Margin="25,405,0,0" VerticalAlignment="Top" Width="90" Height="37"  PreviewMouseDown="Btn_jog_PreviewMouseDown" PreviewMouseUp="Btn_jog_PreviewMouseUp"/>
+        <Button x:Name="btn_jogp" Content="jog Pos(mm)" HorizontalAlignment="Left" Margin="25,444,0,0" VerticalAlignment="Top" Width="90" Height="37"  PreviewMouseDown="Btn_jogp_PreviewMouseDown" PreviewMouseUp="Btn_jog_PreviewMouseUp"/>
+        <Rectangle x:Name="rect_serverState" Fill="#FFDDDDDD" HorizontalAlignment="Left" Height="14" Margin="10,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="110" RadiusY="1.667" RadiusX="1.667"/>
+        <TextBox x:Name="tb_jog1" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="115,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="tb_jog2" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="159,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="tb_jog3" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="203,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="tb_jog4" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="247,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="tb_jog5" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="291,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <TextBox x:Name="tb_jog6" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="38" Margin="335,422,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="44"/>
+        <control:UserControl_UrRobot Margin="954,9,28,46"   ></control:UserControl_UrRobot>
+        <Button x:Name="btn_connectClient2" Content="connect client" HorizontalAlignment="Left" Margin="428,379,0,0" VerticalAlignment="Top" Width="181" Height="44" Click="Btn_connectClient2_Click"/>
 
     </Grid>
 </Window>
