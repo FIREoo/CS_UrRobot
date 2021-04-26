@@ -53,14 +53,14 @@
     <Compile Include="UserControl_UrRobot.xaml.cs">
       <DependentUpon>UserControl_UrRobot.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
+    <Compile Include="CmdWindow.xaml.cs">
+      <DependentUpon>CmdWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="UserControl_UrRobot.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Window1.xaml">
+    <Page Include="CmdWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -88,9 +88,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Themes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\CS_UrRobot\CS_UrRobot.csproj">
       <Project>{e990c276-c9e3-471a-9c57-7dce2c6f0718}</Project>

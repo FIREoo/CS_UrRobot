@@ -62,12 +62,12 @@ namespace Wpf_UrControlExample
 
         private void Btn_goPos_Click(object sender, RoutedEventArgs e)
         {
-            UR.goPosition(new URCoordinates(0.45.M(), 0.0.M(), 0.14.M(), 3.14.rad(), 0.rad(), 0.rad()));
+            Task.Run(() => { UR.goPosition(new URCoordinates(0.45.M(), 0.0.M(), 0.14.M(), 3.14.rad(), 0.rad(), 0.rad())); });
         }
 
         private void Btn_goJoint_Click(object sender, RoutedEventArgs e)
         {
-            UR.goJoint(new URJoint(3.14.rad(), -1.57.rad(), 0.rad(), -1.57.rad(), 0.rad(), 0.rad()));
+            Task.Run(() => { UR.goJoint(new URJoint(3.14.rad(), -1.57.rad(), 0.rad(), -1.57.rad(), 0.rad(), 0.rad()));}); 
         }
 
         private void Btn_recordj_Click(object sender, RoutedEventArgs e)
@@ -83,12 +83,14 @@ namespace Wpf_UrControlExample
 
         private void Btn_servoj1_Click(object sender, RoutedEventArgs e)
         {
-            UR.goTrack(new URJoint(-1.5.rad(), -3.0.rad(), 1.1.rad(), -1.2.rad(), -1.7.rad(), 7.8.rad()));
+            //UR.goTrack(new URJoint(0.rad(), 0.rad(),0.rad(), 0.rad(), 0.rad(),0.rad()));
+            UR.goTrack2(new URCoordinates(-455.87.mm(), -326.28.mm(), 72.63.mm(), (Math.PI / 2.0).rad(), 0.rad(), 0.rad()), new URJoint());
         }
 
         private void Btn_servoj2_Click(object sender, RoutedEventArgs e)
         {
-            UR.goTrack(new URJoint(-1.5.rad(), -3.0.rad(), 2.2.rad(), -2.3.rad(), -1.6.rad(), 7.8.rad()));
+            UR.goTrack(new URJoint(-0.5.rad(), 0.rad(), 0.rad(), 0.rad(), 0.rad(), 0.rad()));
+            //UR.goTrack2(new URCoordinates(-455.87.mm(), -326.28.mm(), 72.63.mm(), (Math.PI / 2.0).rad(), 0.rad(), 0.rad()));
         }
 
         private void Btn_record_Click(object sender, RoutedEventArgs e)
@@ -256,7 +258,13 @@ namespace Wpf_UrControlExample
             e.Handled = true;
         }
 
+        private void Btn_connectClient2_Click(object sender, RoutedEventArgs e)
+        {
+            if (!URc.ClientConnect("192.168.0.200"))
+                Console.WriteLine("Client連線失敗");
 
+            URc.Client_RTDE2();
+        }
     }
 
     public class ListViewData : INotifyPropertyChanged

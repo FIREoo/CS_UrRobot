@@ -7,37 +7,99 @@
              mc:Ignorable="d" Width="350" Height="500">
     <Viewbox>
         <Grid Height="500" Width="350" Background="#4C56A0D3">
-            <Button Content="nn" HorizontalAlignment="Left" Margin="257,18,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+            <Button Content="nn" HorizontalAlignment="Left" Margin="275,316,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
             <Button x:Name="btn_startServer" Content="Start Server" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13" Click="Btn_startServer_Click"/>
-            <Button Content="Go To Point" HorizontalAlignment="Left" Margin="265,324,0,0" VerticalAlignment="Top" Width="77" Height="30" Background="#FFE0B0B0"/>
-            <TextBox x:Name="tb_urPos_x" HorizontalAlignment="Left" Height="23" Margin="206,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,170,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="191,168,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="tb_urPos_y" HorizontalAlignment="Left" Height="23" Margin="206,192,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,196,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="191,194,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="tb_urPos_z" HorizontalAlignment="Left" Height="23" Margin="206,218,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,222,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="191,220,0,0" TextWrapping="Wrap" Text="Z" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="tb_urPos_rx" HorizontalAlignment="Left" Height="23" Margin="206,244,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,248,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="187,246,0,0" TextWrapping="Wrap" Text="Rx" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="tb_urPos_ry" HorizontalAlignment="Left" Height="23" Margin="206,270,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,274,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="187,272,0,0" TextWrapping="Wrap" Text="Ry" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="tb_urPos_rz" HorizontalAlignment="Left" Height="23" Margin="206,296,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
-            <TextBlock HorizontalAlignment="Left" Margin="320,300,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Left" Margin="187,298,0,0" TextWrapping="Wrap" Text="Rz" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,166,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,192,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,218,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,244,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,270,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="265,296,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button Content="Go Point" HorizontalAlignment="Left" Margin="250,345,0,0" VerticalAlignment="Top" Width="52" Height="30" Background="#FFE0B0B0"/>
+            <TextBox x:Name="tb_urPos_x" HorizontalAlignment="Left" Height="24" Margin="32,99,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urPos_y" HorizontalAlignment="Left" Height="24" Margin="32,125,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urPos_z" HorizontalAlignment="Left" Height="24" Margin="32,151,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urPos_rx" HorizontalAlignment="Left" Height="24" Margin="32,177,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urPos_ry" HorizontalAlignment="Left" Height="24" Margin="32,203,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urPos_rz" HorizontalAlignment="Left" Height="24" Margin="32,229,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_1" HorizontalAlignment="Left" Height="24" Margin="141,99,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_2" HorizontalAlignment="Left" Height="24" Margin="141,125,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_3" HorizontalAlignment="Left" Height="24" Margin="141,151,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_4" HorizontalAlignment="Left" Height="24" Margin="141,177,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_5" HorizontalAlignment="Left" Height="24" Margin="141,203,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBox x:Name="tb_urJoint_6" HorizontalAlignment="Left" Height="24" Margin="141,229,0,0" TextWrapping="Wrap" Text="00.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Background="#FFC9C9C9"/>
+            <TextBlock HorizontalAlignment="Left" Margin="13,179,0,0" TextWrapping="Wrap" Text="Rx" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="13,205,0,0" TextWrapping="Wrap" Text="Ry" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="13,231,0,0" TextWrapping="Wrap" Text="Rz" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="17,101,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="17,127,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="17,153,0,0" TextWrapping="Wrap" Text="Z" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,101,0,0" TextWrapping="Wrap" Text="J1" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,127,0,0" TextWrapping="Wrap" Text="J2" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,153,0,0" TextWrapping="Wrap" Text="J3" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,179,0,0" TextWrapping="Wrap" Text="J4" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,205,0,0" TextWrapping="Wrap" Text="J5" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="126,231,0,0" TextWrapping="Wrap" Text="J6" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,107,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,133,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,159,0,0" TextWrapping="Wrap" Text="mm" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,185,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,211,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="86,237,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,107,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,133,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,159,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,185,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,211,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="195,237,0,0" TextWrapping="Wrap" Text="rad" VerticalAlignment="Top"/>
+            <TextBox x:Name="tb_in1" HorizontalAlignment="Left" Height="24" Margin="222,99,0,0" TextWrapping="Wrap" Text="00.0" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseWheel="Tb_in_MouseWheel"  PreviewMouseDown="Tb_in_PreviewMouseDown"/>
+            <TextBox x:Name="tb_in2" HorizontalAlignment="Left" Height="24" Margin="222,125,0,0" TextWrapping="Wrap" Text="00.0" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseWheel="Tb_in_MouseWheel"  PreviewMouseDown="Tb_in_PreviewMouseDown"/>
+            <TextBox x:Name="tb_in3" HorizontalAlignment="Left" Height="24" Margin="222,151,0,0" TextWrapping="Wrap" Text="00.0" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseWheel="Tb_in_MouseWheel"  PreviewMouseDown="Tb_in_PreviewMouseDown"/>
+            <TextBox x:Name="tb_in4" HorizontalAlignment="Left" Height="24" Margin="222,177,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <TextBox x:Name="tb_in5" HorizontalAlignment="Left" Height="24" Margin="222,203,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <TextBox x:Name="tb_in6" HorizontalAlignment="Left" Height="24" Margin="222,229,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="54" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             <Rectangle x:Name="rect_server" Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="14,12,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
             <Button x:Name="btn_startClient" Content="Connect UR" VerticalContentAlignment="Bottom"  HorizontalAlignment="Left" Margin="92,9,0,0" VerticalAlignment="Top" Width="80" Height="30" FontSize="13" Click="Btn_startClient_Click"/>
             <Rectangle x:Name="rect_client" Fill="#00F4F4F5" HorizontalAlignment="Left" Height="7" Margin="96,12,0,0" Stroke="Gray" VerticalAlignment="Top" Width="72" RadiusY="5.5" RadiusX="5.5"/>
-            <Button x:Name="btn_getPosition" Content="Get" HorizontalAlignment="Left" Margin="206,140,0,0" VerticalAlignment="Top" Width="54" MouseDown="Btn_getPosition_MouseDown"/>
+            <ComboBox x:Name="comboBox_goPath" HorizontalAlignment="Left" Margin="10,309,0,0" VerticalAlignment="Top" Width="135" ContextMenuOpening="ComboBox_goPath_ContextMenuOpening"/>
+            <TextBlock HorizontalAlignment="Left" Margin="146,315,0,0" TextWrapping="Wrap" Text=".Path" VerticalAlignment="Top" MouseDown="TextBlock_MouseDown"/>
+            <Button x:Name="btn_goPath" Content="Go Path" HorizontalAlignment="Left" Margin="10,335,0,0" VerticalAlignment="Top" Width="164" Height="30" Background="#FFE0B0B0" Click="Btn_goPath_Click"/>
+            <TextBlock HorizontalAlignment="Left" Margin="83,295,0,0" TextWrapping="Wrap" Text="([R]-refresh)" VerticalAlignment="Top" MouseDown="TextBlock_MouseDown" Foreground="#FF2B2B2B" FontSize="11"/>
+            <TextBlock HorizontalAlignment="Left" Margin="179,315,0,0" TextWrapping="Wrap" Text="([R]-open folder)" VerticalAlignment="Top" MouseDown="TextBlock_MouseDown" Foreground="#FF2B2B2B" FontSize="11"/>
+            <Button x:Name="btn_jog_x" HorizontalAlignment="Left" Margin="179,36,0,0" VerticalAlignment="Top" Width="56" Height="24" PreviewMouseDown="Btn_jog_x_PreviewMouseDown" PreviewMouseUp="Btn_jog_x_PreviewMouseUp">
+                <Viewbox HorizontalAlignment="Left" Height="auto" VerticalAlignment="Top" Width="auto">
+                    <Grid Height="100" Width="200">
+                        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="80" Margin="30,10,0,0" VerticalAlignment="Top" Width="20"/>
+                        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="20" Margin="0,40,0,0" VerticalAlignment="Top" Width="80"/>
+                        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="20" Margin="120,40,0,0" VerticalAlignment="Top" Width="80"/>
+                        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="100" Margin="97,0,0,-12" VerticalAlignment="Top" Width="2"/>
+                        <Rectangle Fill="Black" HorizontalAlignment="Left" Height="100" Margin="101,0,0,-12" VerticalAlignment="Top" Width="2"/>
+                    </Grid>
+                </Viewbox>
+            </Button>
+            <TextBlock HorizontalAlignment="Left" Margin="179,17,0,0" TextWrapping="Wrap" Text="Jog(mm)" VerticalAlignment="Top"/>
+            <Button x:Name="btn_test1" Content="P1" HorizontalAlignment="Left" Margin="11,436,0,0" VerticalAlignment="Top" Width="74" Click="Btn_test1_Click"/>
+            <Button x:Name="btn_test2" Content="P2" HorizontalAlignment="Left" Margin="126,436,0,0" VerticalAlignment="Top" Width="74" Click="Btn_test2_Click"/>
+            <Button x:Name="btn_test3" Content="jog P1" HorizontalAlignment="Left" Margin="11,455,0,0" VerticalAlignment="Top" Width="74" Click="Btn_test3_Click"/>
+            <Button x:Name="btn_test4" Content="jog P2" HorizontalAlignment="Left" Margin="126,455,0,0" VerticalAlignment="Top" Width="74" Click="Btn_test4_Click"/>
+            <Button x:Name="btn_urc_play" HorizontalAlignment="Left" Margin="92,42,0,0" VerticalAlignment="Top" Width="28" Click="Btn_urc_play_Click" Height="20">
+                <Polygon Points="0,0 0,10, 8.66,5" Fill="Black"/>
+            </Button>
+            <Button x:Name="btn_urc_stop" HorizontalAlignment="Left" Margin="123,42,0,0" VerticalAlignment="Top" Width="28" Click="Btn_urc_stop_Click" Height="20">
+                <Rectangle Fill="Black" HorizontalAlignment="Left" Height="8" VerticalAlignment="Top" Width="8"/>
+            </Button>
+            <Button x:Name="btn_cmd_stop" Content="Stop" HorizontalAlignment="Left" Margin="290,254,0,0" VerticalAlignment="Top" Width="56" Height="37" Background="#FFF0BDBD" Foreground="#FFC50000" Click="Btn_cmd_stop_Click"/>
+            <Button x:Name="btn_cmdWindow" Content="More Command" HorizontalAlignment="Left" Margin="244,1,0,0" VerticalAlignment="Top" Width="106" Click="Btn_cmdWindow_Click" Height="26" Foreground="LightGray" Background="#FF3E3E3E"/>
+            <Button x:Name="btn_getPosition" HorizontalAlignment="Left" Margin="32,73,0,0" VerticalAlignment="Top" Width="54" PreviewMouseDown="Btn_getPosition_MouseDown">
+                <Grid HorizontalAlignment="Left" Height="19" VerticalAlignment="Top" Width="50">
+                    <CheckBox x:Name="cb_loop_getPosition" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Cb_loop_getPosition_Click" Margin="0,2,0,0"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="25,2,0,0" TextWrapping="Wrap" Text="Get" VerticalAlignment="Top"/>
+                </Grid>
+            </Button>
+            <Button x:Name="btn_getJoint" HorizontalAlignment="Left" Margin="141,73,0,0" VerticalAlignment="Top" Width="54" PreviewMouseDown="Btn_getJoint_MouseDown">
+                <Grid HorizontalAlignment="Left" Height="19" VerticalAlignment="Top" Width="50">
+                    <CheckBox x:Name="cb_loop_getJoint" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Cb_loop_getJoint_Click" Margin="0,2,0,0"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="25,2,0,0" TextWrapping="Wrap" Text="Get" VerticalAlignment="Top"/>
+                </Grid>
+            </Button>
+            <TextBlock x:Name="tb_cmd" HorizontalAlignment="Left" Margin="11,39,0,0" TextWrapping="Wrap" Text="stop" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Foreground="#FF490000"/>
+            <Grid HorizontalAlignment="Left" Height="154" Margin="141,99,0,0" VerticalAlignment="Top" Width="54" Background="#1904428D" MouseMove="Grid_dragOutJoint_MouseMove"/>
+            <Grid HorizontalAlignment="Left" Height="153" Margin="32,99,0,0" VerticalAlignment="Top" Width="54" Background="#190B8D04" MouseMove="Grid_dragOutPos_MouseMove"/>
+
         </Grid>
 
     </Viewbox>
